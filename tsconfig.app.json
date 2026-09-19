@@ -20,7 +20,12 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@ds": ["./src/design-system/index.ts"],
+      "@ds/*": ["./src/design-system/*"]
+    }
   },
   "include": ["src"]
 }
