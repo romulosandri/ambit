@@ -1,5 +1,14 @@
 import { Plus } from "@phosphor-icons/react"
-import { useEffect, useId, useMemo, useRef, useState } from "react"
+import {
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react"
+import { createPortal } from "react-dom"
 import type { SocialName } from "./brands"
 import { Avatar } from "./Avatar"
 import { Button } from "./Button"
@@ -279,6 +288,9 @@ export type FilterMenuProps = FilterProps & {
   onOpenChange?: (open: boolean) => void
 }
 
+const MENU_GAP = 8
+const VIEWPORT_PAD = 8
+
 export function FilterMenu({
   open: openProp,
   onOpenChange,
@@ -287,14 +299,58 @@ export function FilterMenu({
 }: FilterMenuProps) {
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false)
   const open = openProp ?? uncontrolledOpen
-  const rootRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLDivElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
   const dialogId = useId()
   const count = filterCount(filterProps.value)
+  const [style, setStyle] = useState<CSSProperties>({})
 
   function setOpen(next: boolean) {
     onOpenChange?.(next)
     if (openProp === undefined) setUncontrolledOpen(next)
   }
+
+  useLayoutEffect(() => {
+    if (!open) return undefined
+
+    function place() {
+      const trigger = triggerRef.current
+      const panel = panelRef.current
+      if (!trigger || !panel) return
+
+      const rect = trigger.getBoundingClientRect()
+      const menuWidth = panel.offsetWidth
+      const menuHeight = panel.offsetHeight
+      const maxLeft = window.innerWidth - menuWidth - VIEWPORT_PAD
+      const left = Math.min(
+        Math.max(VIEWPORT_PAD, rect.right - menuWidth),
+        maxLeft,
+      )
+      const below = rect.bottom + MENU_GAP
+      const openUp =
+        below + menuHeight > window.innerHeight - VIEWPORT_PAD &&
+        rect.top - MENU_GAP - menuHeight >= VIEWPORT_PAD
+
+      setStyle({
+        left,
+        top: openUp
+          ? Math.max(VIEWPORT_PAD, rect.top - MENU_GAP - menuHeight)
+          : below,
+      })
+    }
+
+    place()
+    const panel = panelRef.current
+    const observer = panel ? new ResizeObserver(place) : null
+    if (panel) observer?.observe(panel)
+    window.addEventListener("resize", place)
+    window.addEventListener("scroll", place, true)
+    return () => {
+      observer?.disconnect()
+      window.removeEventListener("resize", place)
+      window.removeEventListener("scroll", place, true)
+    }
+  }, [open])
 
   useEffect(() => {
     if (!open) return undefined
@@ -305,12 +361,19 @@ export function FilterMenu({
     }
 
     function handlePointer(event: PointerEvent) {
-      if (rootRef.current?.contains(event.target as Node)) return
+      const target = event.target as Node | null
+      if (!target) return
+      if (triggerRef.current?.contains(target)) return
+      if (panelRef.current?.contains(target)) return
       close()
     }
 
     function handleKey(event: KeyboardEvent) {
-      if (event.key === "Escape") close()
+      if (event.key === "Escape") {
+        event.stopPropagation()
+        close()
+        triggerRef.current?.querySelector("button")?.focus()
+      }
     }
 
     document.addEventListener("pointerdown", handlePointer)
@@ -322,7 +385,7 @@ export function FilterMenu({
   }, [open, openProp, onOpenChange])
 
   return (
-    <div ref={rootRef} className={cx("relative z-30", className)}>
+    <div ref={triggerRef} className={cx("relative", className)}>
       <FilterButton
         selected={count > 0}
         count={count > 0 ? count : undefined}
@@ -330,13 +393,14 @@ export function FilterMenu({
         aria-controls={open ? dialogId : undefined}
         onClick={() => setOpen(!open)}
       />
-      {open ? (
-        <Filter
-          {...filterProps}
-          id={dialogId}
-          className="absolute top-full right-0 z-30 mt-8"
-        />
-      ) : null}
+      {open
+        ? createPortal(
+            <div ref={panelRef} className="fixed z-50" style={style}>
+              <Filter {...filterProps} id={dialogId} />
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   )
 }
