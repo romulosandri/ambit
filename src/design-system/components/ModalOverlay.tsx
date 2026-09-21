@@ -54,6 +54,7 @@ export function ModalOverlay({
             }}
           >
             <motion.div
+              className="flex min-h-0 min-w-0 max-h-full w-full max-w-520 justify-center"
               initial={reduce ? false : { opacity: 0, y: 16, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={reduce ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.98 }}
