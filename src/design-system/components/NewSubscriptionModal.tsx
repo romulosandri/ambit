@@ -1,5 +1,7 @@
 import { Globe, Newspaper, User } from "@phosphor-icons/react"
 import { useState } from "react"
+import { AnimatePresence, motion, useReducedMotion } from "motion/react"
+import { presenceTransition } from "@/motion/config"
 import { BackgroundPicker } from "./BackgroundPicker"
 import { Button } from "./Button"
 import { ChannelRow } from "./ChannelRow"
@@ -46,6 +48,7 @@ export function NewSubscriptionModal({
   const [uncontrolledStep, setUncontrolledStep] =
     useState<SubscriptionStep>("choose")
   const step = stepProp ?? uncontrolledStep
+  const reduce = useReducedMotion()
 
   function setStep(next: SubscriptionStep) {
     onStepChange?.(next)
@@ -124,39 +127,50 @@ export function NewSubscriptionModal({
       )}
     >
       <div className="flex min-h-0 flex-1 flex-col gap-24 overflow-y-auto p-24">
-        {step === "choose" ? (
-          <ChooseStep kind={kind} onKindChange={setKind} />
-        ) : null}
-        {step === "topic" ? (
-          <TopicStep
-            title={title}
-            onTitleChange={setTitle}
-            scope={scope}
-            onScopeChange={setScope}
-            keywords={keywords}
-            onKeywordsChange={setKeywords}
-            background={background}
-            onBackgroundChange={setBackground}
-            includeBrief={includeBrief}
-            onIncludeBriefChange={setIncludeBrief}
-            selectedChannels={selectedChannels}
-            onToggleChannel={toggleChannel}
-          />
-        ) : null}
-        {step === "source" ? (
-          <SourceStep
-            sourceKind={sourceKind}
-            onSourceKindChange={setSourceKind}
-            name={name}
-            onNameChange={setName}
-            url={url}
-            onUrlChange={setUrl}
-            includeBrief={includeBrief}
-            onIncludeBriefChange={setIncludeBrief}
-            selectedChannels={selectedChannels}
-            onToggleChannel={toggleChannel}
-          />
-        ) : null}
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={step}
+            initial={reduce ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduce ? { opacity: 0 } : { opacity: 0, y: -6 }}
+            transition={presenceTransition}
+            className="flex min-h-0 flex-1 flex-col gap-24"
+          >
+            {step === "choose" ? (
+              <ChooseStep kind={kind} onKindChange={setKind} />
+            ) : null}
+            {step === "topic" ? (
+              <TopicStep
+                title={title}
+                onTitleChange={setTitle}
+                scope={scope}
+                onScopeChange={setScope}
+                keywords={keywords}
+                onKeywordsChange={setKeywords}
+                background={background}
+                onBackgroundChange={setBackground}
+                includeBrief={includeBrief}
+                onIncludeBriefChange={setIncludeBrief}
+                selectedChannels={selectedChannels}
+                onToggleChannel={toggleChannel}
+              />
+            ) : null}
+            {step === "source" ? (
+              <SourceStep
+                sourceKind={sourceKind}
+                onSourceKindChange={setSourceKind}
+                name={name}
+                onNameChange={setName}
+                url={url}
+                onUrlChange={setUrl}
+                includeBrief={includeBrief}
+                onIncludeBriefChange={setIncludeBrief}
+                selectedChannels={selectedChannels}
+                onToggleChannel={toggleChannel}
+              />
+            ) : null}
+          </motion.div>
+        </AnimatePresence>
       </div>
       <div className="border-border-default bg-bg-muted flex items-center justify-end gap-12 overflow-hidden border-t p-16">
         <Button style="soft" onClick={onCancel}>

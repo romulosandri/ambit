@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes } from "react"
+import { motion, useReducedMotion } from "motion/react"
 import { cx } from "./cx"
 
 export type SwitchProps = Omit<
@@ -16,6 +17,8 @@ export function Switch({
   className,
   ...rest
 }: SwitchProps) {
+  const reduce = useReducedMotion()
+
   return (
     <button
       type="button"
@@ -24,9 +27,9 @@ export function Switch({
       disabled={disabled}
       onClick={() => onChange?.(!checked)}
       className={cx(
-        "inline-flex h-20 w-32 shrink-0 items-center rounded-full p-3",
+        "relative inline-flex h-20 w-32 shrink-0 items-center rounded-full p-3",
         "focus-visible:shadow-misc-focus outline-none",
-        checked ? "justify-end bg-bg-switch-active" : "justify-start bg-bg-switch-default",
+        checked ? "bg-bg-switch-active" : "bg-bg-switch-default",
         checked
           ? "hover:bg-bg-switch-active-hover"
           : "hover:bg-bg-switch-default-hover",
@@ -39,10 +42,15 @@ export function Switch({
       )}
       {...rest}
     >
-      <span
+      <motion.span
         aria-hidden
+        initial={false}
+        animate={{ x: checked ? 12 : 0 }}
+        transition={
+          reduce ? { duration: 0 } : { type: "spring", stiffness: 520, damping: 36 }
+        }
         className={cx(
-          "bg-bg-switch-handle shadow-switch-handle size-14 rounded-full",
+          "bg-bg-switch-handle shadow-switch-handle absolute top-3 left-3 size-14 rounded-full",
           disabled && "bg-bg-switch-handle-disabled",
         )}
       />

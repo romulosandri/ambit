@@ -83,6 +83,8 @@ const fontWeight = loadTsObject("typography.ts", "fontWeight")
 const letterSpacing = loadTsObject("typography.ts", "letterSpacing")
 const lineHeight = loadTsObject("typography.ts", "lineHeight")
 const textStyles = loadTsObject("typography.ts", "textStyles")
+const duration = loadTsObject("motion.ts", "duration")
+const easing = loadTsObject("motion.ts", "easing")
 
 const primitiveLines = []
 const primitiveTheme = []
@@ -174,6 +176,24 @@ for (const [key, value] of Object.entries(lineHeight)) {
   leadingTheme.push(`  --leading-${key}: var(--ds-leading-${key});`)
 }
 
+const durationLines = Object.entries(duration).map(
+  ([key, value]) => `  --ds-duration-${key}: ${value}ms;`,
+)
+const durationTheme = Object.keys(duration).map(
+  (key) => `  --duration-${key}: var(--ds-duration-${key});`,
+)
+
+const easingLines = Object.entries(easing).map(
+  ([key, value]) => `  --ds-ease-${key}: ${value};`,
+)
+const easingTheme = Object.keys(easing).map(
+  (key) => `  --ease-${key}: var(--ds-ease-${key});`,
+)
+
+const reducedMotionLines = Object.keys(duration).map(
+  (key) => `    --ds-duration-${key}: 0ms;`,
+)
+
 const textStyleUtilities = Object.entries(textStyles)
   .map(([key, style]) => {
     const name = kebab(key)
@@ -215,6 +235,16 @@ ${fontWeightLines.join("\n")}
 ${fontSizeRoot.join("\n")}
 ${leadingRoot.join("\n")}
 ${trackingLines.join("\n")}
+
+  /* Motion */
+${durationLines.join("\n")}
+${easingLines.join("\n")}
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+${reducedMotionLines.join("\n")}
+  }
 }
 
 @media (max-width: 767px) {
@@ -249,6 +279,9 @@ ${fontSizeTheme.join("\n")}
 ${leadingTheme.join("\n")}
 ${trackingTheme.join("\n")}
 ${fontWeightTheme.join("\n")}
+
+${durationTheme.join("\n")}
+${easingTheme.join("\n")}
 }
 `
 

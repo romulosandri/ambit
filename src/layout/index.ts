@@ -1,5 +1,7 @@
-export { AppShell, CenterContainer, useNavDrawer } from "./AppShell"
+export { AppShell, CenterContainer } from "./AppShell"
 export type { AppShellProps, CenterContainerProps } from "./AppShell"
+export { useNavDrawer } from "./NavDrawerContext"
+export type { NavDrawerContextValue } from "./NavDrawerContext"
 export { useMediaQuery, COMPACT_NAV_QUERY } from "./useMediaQuery"
 export { PageHeader, ToolBar } from "./PageHeader"
 export type { PageHeaderProps, ToolBarProps } from "./PageHeader"

@@ -1,5 +1,7 @@
 import type { Icon as PhosphorIcon, IconWeight } from "@phosphor-icons/react"
 import type { ButtonHTMLAttributes, ReactNode } from "react"
+import { motion, useReducedMotion } from "motion/react"
+import { microTransition } from "@/motion/config"
 import { Icon } from "./Icon"
 import { cx } from "./cx"
 
@@ -14,7 +16,7 @@ export type ButtonShape = "rounded" | "pill"
 
 export type ButtonProps = Omit<
   ButtonHTMLAttributes<HTMLButtonElement>,
-  "style" | "children"
+  "style" | "children" | "onDrag" | "onDragStart" | "onDragEnd" | "onAnimationStart"
 > & {
   children?: ReactNode
   /** Visual style from the Figma `bg/state/*` families. */
@@ -117,13 +119,16 @@ export function Button({
   ...rest
 }: ButtonProps) {
   const dashed = borderStyle === "dashed"
+  const reduce = useReducedMotion()
 
   return (
-    <button
+    <motion.button
       type={type}
       disabled={disabled}
       aria-disabled={disabled || undefined}
       aria-busy={isLoading || undefined}
+      whileTap={disabled || isLoading || reduce ? undefined : { scale: 0.98 }}
+      transition={microTransition}
       className={cx(
         "inline-flex shrink-0 items-center justify-center overflow-hidden",
         "focus-visible:shadow-misc-focus outline-none",
@@ -149,6 +154,6 @@ export function Button({
         </span>
       )}
       {tailIcon ? <Icon icon={tailIcon} size={16} /> : null}
-    </button>
+    </motion.button>
   )
 }

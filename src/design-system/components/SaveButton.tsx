@@ -1,5 +1,7 @@
 import { BookmarkSimple } from "@phosphor-icons/react"
-import type { MouseEvent } from "react"
+import { useEffect, useRef, useState, type MouseEvent } from "react"
+import { motion, useReducedMotion } from "motion/react"
+import { microTransition } from "@/motion/config"
 import { Button } from "./Button"
 import { cardLinkControlClassName } from "./CardLink"
 import { cx } from "./cx"
@@ -22,25 +24,45 @@ export function SaveButton({
   label,
   className,
 }: SaveButtonProps) {
+  const reduce = useReducedMotion()
+  const mounted = useRef(false)
+  const [pop, setPop] = useState(0)
+
+  useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true
+      return
+    }
+    setPop((current) => current + 1)
+  }, [saved])
+
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
     stopCardNavigation(event)
     onSave()
   }
 
   return (
-    <Button
-      iconOnly
-      size="sm"
-      style="soft"
-      leadIcon={BookmarkSimple}
-      leadIconWeight={saved ? "fill" : "regular"}
-      aria-label={saved ? `Remove ${label} from saved` : `Save ${label}`}
-      aria-pressed={saved}
-      className={className}
-      onClick={handleClick}
-      onMouseDown={stopCardNavigation}
-      onPointerDown={stopCardNavigation}
-    />
+    <motion.span
+      key={pop}
+      className="inline-flex"
+      initial={pop === 0 || reduce ? false : { scale: 0.86 }}
+      animate={{ scale: 1 }}
+      transition={microTransition}
+    >
+      <Button
+        iconOnly
+        size="sm"
+        style="soft"
+        leadIcon={BookmarkSimple}
+        leadIconWeight={saved ? "fill" : "regular"}
+        aria-label={saved ? `Remove ${label} from saved` : `Save ${label}`}
+        aria-pressed={saved}
+        className={className}
+        onClick={handleClick}
+        onMouseDown={stopCardNavigation}
+        onPointerDown={stopCardNavigation}
+      />
+    </motion.span>
   )
 }
 

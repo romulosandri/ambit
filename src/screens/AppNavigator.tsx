@@ -10,6 +10,7 @@ import { DiscoveryScreen } from "./DiscoveryScreen"
 import { HomeScreen } from "./HomeTopicsScreen"
 import { NewChatScreen } from "./NewChatScreen"
 import { SavedScreen } from "./SavedScreen"
+import { SignedInShell } from "./SignedInShell"
 import { SourceDetailsScreen } from "./SourceDetailsScreen"
 import { SubscriptionsScreen } from "./SubscriptionsScreen"
 import { TopicDetailsScreen } from "./TopicDetailsScreen"
@@ -17,9 +18,21 @@ import { TopicDetailsScreen } from "./TopicDetailsScreen"
 export function AppNavigator() {
   const { route } = useAppNav()
 
+  if (route.name === "auth") {
+    return <AuthScreen />
+  }
+
+  return (
+    <SignedInShell>
+      <SignedInScreen />
+    </SignedInShell>
+  )
+}
+
+function SignedInScreen() {
+  const { route } = useAppNav()
+
   switch (route.name) {
-    case "auth":
-      return <AuthScreen />
     case "home":
       return <HomeScreen />
     case "discovery":
@@ -47,6 +60,8 @@ export function AppNavigator() {
     case "article":
       if (!articlesById[route.id]) return <HomeScreen />
       return <ArticleDetailsScreen />
+    case "auth":
+      return <AuthScreen />
     default: {
       const exhaustive: never = route
       return exhaustive

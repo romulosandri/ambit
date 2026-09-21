@@ -556,7 +556,7 @@ export function DesignSystemPreview() {
             <ChatBubble type="user">
               What are the main topics in climate policy recently?
             </ChatBubble>
-            <ChatBubble type="ai" sourceLabel="12 sources" timestamp="9m ago">
+            <ChatBubble type="ai" sourceLabel="Worked for 12s" timestamp="2m ago">
               Recent climate policy has centered on a few key areas: carbon
               pricing, the clean energy transition, and border adjustments as the
               EU's CBAM starts to bite on steel and cement imports.

@@ -9,6 +9,8 @@ import {
   type CSSProperties,
 } from "react"
 import { createPortal } from "react-dom"
+import { AnimatePresence, motion, useReducedMotion } from "motion/react"
+import { microOffset, presenceTransition } from "@/motion/config"
 import type { SocialName } from "./brands"
 import { Avatar } from "./Avatar"
 import { Button } from "./Button"
@@ -243,13 +245,31 @@ export function Filter({
         onChange={(event) => setQuery(event.currentTarget.value)}
       />
       <div className="flex max-h-280 flex-col overflow-y-auto">
-        {empty ? (
-          <p className="text-body-default text-text-muted px-16 py-8">
-            No matches
-          </p>
-        ) : (
-          list
-        )}
+        <AnimatePresence mode="wait" initial={false}>
+          {empty ? (
+            <motion.p
+              key="empty"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={presenceTransition}
+              className="text-body-default text-text-muted px-16 py-8"
+            >
+              No matches
+            </motion.p>
+          ) : (
+            <motion.div
+              key={tab}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={presenceTransition}
+              className="flex flex-col"
+            >
+              {list}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
       {footer}
     </div>
@@ -304,6 +324,7 @@ export function FilterMenu({
   const dialogId = useId()
   const count = filterCount(filterProps.value)
   const [style, setStyle] = useState<CSSProperties>({})
+  const reduce = useReducedMotion()
 
   function setOpen(next: boolean) {
     onOpenChange?.(next)
@@ -393,14 +414,26 @@ export function FilterMenu({
         aria-controls={open ? dialogId : undefined}
         onClick={() => setOpen(!open)}
       />
-      {open
-        ? createPortal(
-            <div ref={panelRef} className="fixed z-50" style={style}>
+      {createPortal(
+        <AnimatePresence>
+          {open ? (
+            <motion.div
+              ref={panelRef}
+              className="origin-top-right fixed z-50"
+              style={style}
+              initial={reduce ? false : { opacity: 0, y: microOffset, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={
+                reduce ? { opacity: 0 } : { opacity: 0, y: microOffset, scale: 0.98 }
+              }
+              transition={presenceTransition}
+            >
               <Filter {...filterProps} id={dialogId} />
-            </div>,
-            document.body,
-          )
-        : null}
+            </motion.div>
+          ) : null}
+        </AnimatePresence>,
+        document.body,
+      )}
     </div>
   )
 }

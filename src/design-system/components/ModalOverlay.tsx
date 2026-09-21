@@ -1,5 +1,7 @@
 import type { ReactNode } from "react"
 import { useEffect } from "react"
+import { AnimatePresence, motion, useReducedMotion } from "motion/react"
+import { overlayTransition, presenceTransition } from "@/motion/config"
 import { cx } from "./cx"
 
 export type ModalOverlayProps = {
@@ -15,6 +17,8 @@ export function ModalOverlay({
   children,
   className,
 }: ModalOverlayProps) {
+  const reduce = useReducedMotion()
+
   useEffect(() => {
     if (!open) return undefined
 
@@ -26,27 +30,40 @@ export function ModalOverlay({
     return () => window.removeEventListener("keydown", handleKey)
   }, [open, onClose])
 
-  if (!open) return null
-
   return (
-    <div
-      className={cx(
-        "bg-bg-overlay absolute inset-0 z-40 overflow-hidden",
-        className,
-      )}
-      role="presentation"
-      onClick={(event) => {
-        if (event.target === event.currentTarget) onClose?.()
-      }}
-    >
-      <div
-        className="flex h-full items-center justify-center p-40 max-md:p-16"
-        onClick={(event) => {
-          if (event.target === event.currentTarget) onClose?.()
-        }}
-      >
-        {children}
-      </div>
-    </div>
+    <AnimatePresence>
+      {open ? (
+        <motion.div
+          className={cx(
+            "bg-bg-overlay absolute inset-0 z-40 overflow-hidden",
+            className,
+          )}
+          role="presentation"
+          initial={reduce ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={overlayTransition}
+          onClick={(event) => {
+            if (event.target === event.currentTarget) onClose?.()
+          }}
+        >
+          <div
+            className="flex h-full items-center justify-center p-40 max-md:p-16"
+            onClick={(event) => {
+              if (event.target === event.currentTarget) onClose?.()
+            }}
+          >
+            <motion.div
+              initial={reduce ? false : { opacity: 0, y: 16, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={reduce ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.98 }}
+              transition={presenceTransition}
+            >
+              {children}
+            </motion.div>
+          </div>
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
   )
 }

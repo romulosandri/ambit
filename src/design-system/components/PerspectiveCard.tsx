@@ -33,7 +33,7 @@ export function PerspectiveCard({
       <Cover src={imageSrc} size="sm" radius="sm" />
       <div className="flex min-w-0 flex-1 flex-col gap-8">
         <SourceLine source={source} logoSrc={logoSrc} social={social} />
-        <h3 className="text-body-default text-text-default line-clamp-2">
+        <h3 className="text-body-reading text-text-default line-clamp-2">
           {href ? <CardLink href={href}>{title}</CardLink> : title}
         </h3>
       </div>

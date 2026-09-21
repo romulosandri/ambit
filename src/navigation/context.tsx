@@ -5,7 +5,6 @@ import {
   useEffect,
   useMemo,
   useState,
-  type MouseEvent,
   type ReactNode,
 } from "react"
 import { matchChatForPrompt } from "@/data"
@@ -99,13 +98,4 @@ export function useAppNav(): NavigationValue {
     throw new Error("useAppNav must be used inside NavigationProvider")
   }
   return value
-}
-
-export function handleAppLinkClick(event: MouseEvent<HTMLElement>) {
-  const target = (event.target as HTMLElement | null)?.closest("a")
-  if (!target) return
-  const href = target.getAttribute("href")
-  if (!href?.startsWith("#/")) return
-  event.preventDefault()
-  window.location.hash = href
 }

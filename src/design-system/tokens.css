@@ -564,6 +564,24 @@
   --ds-tracking-wide: 0.4px;
   --ds-tracking-wider: 0.8px;
   --ds-tracking-widest: 1.6px;
+
+  /* Motion */
+  --ds-duration-fast: 150ms;
+  --ds-duration-normal: 200ms;
+  --ds-duration-slow: 320ms;
+  --ds-duration-dramatic: 560ms;
+  --ds-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --ds-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ds-duration-fast: 0ms;
+    --ds-duration-normal: 0ms;
+    --ds-duration-slow: 0ms;
+    --ds-duration-dramatic: 0ms;
+  }
 }
 
 @media (max-width: 767px) {

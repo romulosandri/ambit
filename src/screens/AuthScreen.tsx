@@ -13,6 +13,16 @@ import {
   TextField,
 } from "@ds"
 import { AuthCard, AuthShell } from "@/layout"
+import {
+  AnimatePresence,
+  gsap,
+  markAuthHandoff,
+  motion,
+  prefersReducedMotion,
+  presenceTransition,
+  useGSAP,
+  useReducedMotion,
+} from "@/motion"
 import { useAppNav } from "@/navigation"
 
 const countries = [
@@ -43,12 +53,60 @@ export function AuthScreen({
 }) {
   const [view, setView] = useState<AuthView>(initialView)
   const { navigate } = useAppNav()
-  const enterApp = () => navigate({ name: "home" })
+  const rootRef = useRef<HTMLDivElement>(null)
+  const cardRef = useRef<HTMLDivElement>(null)
+  const reduce = useReducedMotion()
+
+  const { contextSafe } = useGSAP(
+    () => {
+      if (prefersReducedMotion()) return
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } })
+      tl.from(cardRef.current, { y: 28, opacity: 0, duration: 0.55 })
+      tl.from(
+        "[data-auth-stagger]",
+        { y: 12, opacity: 0, duration: 0.4, stagger: 0.06 },
+        "-=0.28",
+      )
+    },
+    { scope: rootRef },
+  )
+
+  const enterApp = contextSafe(() => {
+    const goHome = () => {
+      markAuthHandoff()
+      navigate({ name: "home" })
+    }
+    if (prefersReducedMotion() || !cardRef.current) {
+      goHome()
+      return
+    }
+    gsap.to(cardRef.current, {
+      y: -20,
+      opacity: 0,
+      duration: 0.4,
+      ease: "power2.in",
+      onComplete: goHome,
+    })
+  })
 
   return (
-    <AuthShell>
-      <AuthCard>{renderAuthView(view, setView, enterApp)}</AuthCard>
-    </AuthShell>
+    <div ref={rootRef} className="h-full">
+      <AuthShell>
+        <AuthCard ref={cardRef}>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={view}
+              initial={reduce ? false : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduce ? { opacity: 0 } : { opacity: 0, y: -8 }}
+              transition={presenceTransition}
+            >
+              {renderAuthView(view, setView, enterApp)}
+            </motion.div>
+          </AnimatePresence>
+        </AuthCard>
+      </AuthShell>
+    </div>
   )
 }
 
@@ -103,7 +161,7 @@ function AuthHeader({
   subtitle: string
 }) {
   return (
-    <div className="flex w-full flex-col items-center gap-12">
+    <div className="flex w-full flex-col items-center gap-12" data-auth-stagger>
       <Logo />
       <div className="flex w-full flex-col items-center gap-4 text-center">
         {title ? (
@@ -125,7 +183,7 @@ function AuthFooter({
   onClick: () => void
 }) {
   return (
-    <div className="flex items-center justify-center gap-4">
+    <div className="flex items-center justify-center gap-4" data-auth-stagger>
       <span className="text-body-default text-text-muted">{prompt}</span>
       <LinkButton tone="informative" onClick={onClick}>
         {action}
@@ -166,7 +224,7 @@ function SignInSocial({
     <>
       <div className="border-border-default flex flex-col gap-24 border-b p-36 max-md:p-24">
         <AuthHeader subtitle="Welcome back!" />
-        <div className="flex flex-col gap-24">
+        <div className="flex flex-col gap-24" data-auth-stagger>
           <div className="flex flex-col gap-8">
             <SocialButton brand="apple" onClick={onEnter} />
             <SocialButton brand="google" onClick={onEnter} />
@@ -245,7 +303,7 @@ function SignUpSocial({
           title="Create an account"
           subtitle="Welcome! Create an account to get started."
         />
-        <div className="flex flex-col gap-24">
+        <div className="flex flex-col gap-24" data-auth-stagger>
           <div className="flex flex-col gap-8">
             <SocialButton brand="apple" onClick={onEnter}>
               Sign up with Apple

@@ -9,6 +9,8 @@ import {
   type RefObject,
 } from "react"
 import { createPortal } from "react-dom"
+import { AnimatePresence, motion, useReducedMotion } from "motion/react"
+import { microOffset, presenceTransition } from "@/motion/config"
 import { Checkbox } from "./Checkbox"
 import { Icon } from "./Icon"
 import { cx } from "./cx"
@@ -44,6 +46,7 @@ export function DropdownMenu({
 }: DropdownMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null)
   const [style, setStyle] = useState<CSSProperties>({})
+  const reduce = useReducedMotion()
 
   useLayoutEffect(() => {
     if (!open) return undefined
@@ -112,21 +115,27 @@ export function DropdownMenu({
     }
   }, [anchor, onClose, open])
 
-  if (!open) return null
-
   return createPortal(
-    <div
-      ref={menuRef}
-      role="menu"
-      aria-labelledby={labelledBy}
-      style={style}
-      className={cx(
-        "bg-bg-default shadow-modal-lg fixed z-50 flex max-h-320 flex-col overflow-y-auto rounded-md p-4",
-        className,
-      )}
-    >
-      {children}
-    </div>,
+    <AnimatePresence>
+      {open ? (
+        <motion.div
+          ref={menuRef}
+          role="menu"
+          aria-labelledby={labelledBy}
+          style={style}
+          initial={reduce ? false : { opacity: 0, y: microOffset, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={reduce ? { opacity: 0 } : { opacity: 0, y: microOffset, scale: 0.98 }}
+          transition={presenceTransition}
+          className={cx(
+            "bg-bg-default shadow-modal-lg origin-top fixed z-50 flex max-h-320 flex-col overflow-y-auto rounded-md p-4",
+            className,
+          )}
+        >
+          {children}
+        </motion.div>
+      ) : null}
+    </AnimatePresence>,
     document.body,
   )
 }

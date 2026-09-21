@@ -1,5 +1,7 @@
 import { Check } from "@phosphor-icons/react"
 import type { InputHTMLAttributes } from "react"
+import { motion } from "motion/react"
+import { microTransition } from "@/motion/config"
 import { cx } from "./cx"
 
 export type CheckboxProps = Omit<
@@ -40,12 +42,22 @@ export function Checkbox({
           "[input:checked:hover~&]:bg-bg-checkbox-active-hover",
           "peer-focus-visible:shadow-misc-focus",
           "peer-disabled:bg-bg-checkbox-disabled peer-disabled:border-border-default",
-          // The check only renders once the input is checked.
-          "[&>svg]:hidden peer-checked:[&>svg]:block",
+          checked === undefined && "[&>svg]:hidden peer-checked:[&>svg]:block",
           "peer-disabled:text-icon-default-disabled text-icon-white-default",
         )}
       >
-        <Check size={14} weight="bold" />
+        {checked === undefined ? (
+          <Check size={14} weight="bold" />
+        ) : (
+          <motion.span
+            initial={false}
+            animate={checked ? { scale: 1, opacity: 1 } : { scale: 0.45, opacity: 0 }}
+            transition={microTransition}
+            className="inline-flex"
+          >
+            <Check size={14} weight="bold" />
+          </motion.span>
+        )}
       </span>
     </span>
   )

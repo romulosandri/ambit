@@ -1,4 +1,5 @@
 import { type ReactNode, useId } from "react"
+import { AnimatePresence } from "motion/react"
 import { cx } from "@ds/components/cx"
 import { SectionHeader } from "./SectionHeader"
 
@@ -22,7 +23,11 @@ export function ArticleSection({
       className={cx("flex flex-col gap-12", className)}
     >
       <SectionHeader id={labelId}>{label}</SectionHeader>
-      <div className="flex flex-col gap-20">{children}</div>
+      <div className="flex flex-col gap-20">
+        <AnimatePresence mode="popLayout" initial={false}>
+          {children}
+        </AnimatePresence>
+      </div>
     </section>
   )
 }

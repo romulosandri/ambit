@@ -27,7 +27,7 @@ export function ArticleCardSmall({
   return (
     <article
       className={cx(
-        "bg-bg-state-ghost hover:bg-bg-state-ghost-hover border-border-default flex w-360 max-w-full items-start gap-12 rounded-md border p-12",
+        "bg-bg-state-soft hover:bg-bg-state-soft-hover border-border-default flex w-360 max-w-full items-start gap-12 rounded-md border p-12",
         href && cardLinkRootClassName,
         className,
       )}
@@ -40,7 +40,7 @@ export function ArticleCardSmall({
           person={person}
           social={social}
         />
-        <h4 className="text-body-default text-text-default line-clamp-3">
+        <h4 className="text-body-reading text-text-default line-clamp-3">
           {href ? <CardLink href={href}>{title}</CardLink> : title}
         </h4>
       </div>

@@ -13,6 +13,8 @@ export {
   letterSpacing,
   lineHeight,
   textStyles,
+  duration,
+  easing,
 } from "./tokens"
 
 export * from "./components"
@@ -37,4 +39,6 @@ export type {
   RadiusToken,
   StrokeToken,
   TextStyleToken,
+  DurationToken,
+  EasingToken,
 } from "./tokens"

@@ -1,5 +1,5 @@
 import { Plus } from "@phosphor-icons/react"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import {
   Avatar,
   Button,
@@ -11,9 +11,7 @@ import {
   Tabs,
 } from "@ds"
 import {
-  AppShell,
   ArticleSection,
-  BottomContainer,
   CardRail,
   CenterContainer,
   PageHeader,
@@ -30,10 +28,18 @@ import {
   user,
   yesterdayArticles,
 } from "@/data"
+import {
+  clearAuthHandoff,
+  Crossfade,
+  EmptyCopy,
+  gsap,
+  peekAuthHandoff,
+  prefersReducedMotion,
+  PresenceItem,
+  useGSAP,
+} from "@/motion"
 import { useAppNav } from "@/navigation"
-import { AppSidebar } from "./AppSidebar"
 import { FeedArticle } from "./FeedArticle"
-import { useComposer } from "./useComposer"
 import { useFeedFilter } from "./useFeedFilter"
 
 function sourceCardProps(source: (typeof subscribedSources)[number]) {
@@ -48,29 +54,50 @@ function sourceCardProps(source: (typeof subscribedSources)[number]) {
 
 export function HomeScreen() {
   const { route, navigate, savedIds, toggleSaved } = useAppNav()
-  const composer = useComposer()
   const filter = useFeedFilter()
   const [topicRange, setTopicRange] = useState("Last 7 Days")
   const tab = route.name === "home" && route.tab === "sources" ? "sources" : "topics"
   const topicsRail = useRail()
   const sourcesRail = useRail()
+  const rootRef = useRef<HTMLDivElement>(null)
 
   const visibleToday = todayArticles.filter(filter.match)
   const visibleYesterday = yesterdayArticles.filter(filter.match)
 
-  return (
-    <AppShell
-      sidebar={<AppSidebar activeItem="home" />}
-      dock={
-        <BottomContainer
-          model="Claude Opus 5"
-          value={composer.value}
-          onChange={composer.onChange}
-          onSubmit={composer.onSubmit}
-        />
+  useGSAP(
+    () => {
+      if (!peekAuthHandoff() || prefersReducedMotion()) {
+        clearAuthHandoff()
+        return
       }
-    >
-      <CenterContainer hasDock>
+
+      const tl = gsap.timeline({
+        defaults: { ease: "power3.out" },
+        onComplete: clearAuthHandoff,
+      })
+      tl.from("[data-home-stage='header']", { y: 20, opacity: 0, duration: 0.5 })
+      tl.from(
+        "[data-home-stage='brief']",
+        { y: 24, opacity: 0, duration: 0.45 },
+        "-=0.28",
+      )
+      tl.from(
+        "[data-home-stage='rail']",
+        { y: 20, opacity: 0, duration: 0.4 },
+        "-=0.24",
+      )
+      tl.from(
+        "[data-home-stage='feed']",
+        { y: 16, opacity: 0, duration: 0.4 },
+        "-=0.2",
+      )
+    },
+    { scope: rootRef },
+  )
+
+  return (
+    <CenterContainer ref={rootRef} hasDock>
+      <div data-home-stage="header">
         <PageHeader
           title={`${user.firstName}, here is what you missed...`}
           lead={<Avatar name={user.name} src={user.avatarSrc} />}
@@ -108,20 +135,24 @@ export function HomeScreen() {
             </ToolBar>
           }
         />
+      </div>
 
+      <Crossfade id={tab}>
         {tab === "topics" ? (
           <>
-            <DailyBriefHorizontalCard
-              summary={todayBrief.summary}
-              month={todayBrief.month}
-              date={todayBrief.date}
-              duration={todayBrief.duration}
-              imageSrc={todayBrief.imageSrc}
-              href={`#/brief/${todayBrief.id}`}
-              saved={savedIds.has(todayBrief.id)}
-              onSave={() => toggleSaved(todayBrief.id)}
-            />
-            <section className="flex flex-col gap-6">
+            <div data-home-stage="brief">
+              <DailyBriefHorizontalCard
+                summary={todayBrief.summary}
+                month={todayBrief.month}
+                date={todayBrief.date}
+                duration={todayBrief.duration}
+                imageSrc={todayBrief.imageSrc}
+                href={`#/brief/${todayBrief.id}`}
+                saved={savedIds.has(todayBrief.id)}
+                onSave={() => toggleSaved(todayBrief.id)}
+              />
+            </div>
+            <section data-home-stage="rail" className="flex flex-col gap-6">
               <SectionHeader
                 trailing={
                   <DropdownButton
@@ -160,7 +191,7 @@ export function HomeScreen() {
             </section>
           </>
         ) : (
-          <section className="flex flex-col gap-6">
+          <section data-home-stage="rail" className="flex flex-col gap-6">
             <SectionHeader
               actions={
                 <RailArrows
@@ -179,31 +210,35 @@ export function HomeScreen() {
             </CardRail>
           </section>
         )}
+      </Crossfade>
 
-        <Divider />
+      <Divider />
 
-        <div className="flex flex-col gap-24">
-          {visibleToday.length > 0 ? (
-            <ArticleSection label="Today">
-              {visibleToday.map((article) => (
-                <FeedArticle key={article.id} article={article} />
-              ))}
-            </ArticleSection>
-          ) : null}
-          {visibleYesterday.length > 0 ? (
-            <ArticleSection label="Yesterday">
-              {visibleYesterday.map((article) => (
-                <FeedArticle key={article.id} article={article} />
-              ))}
-            </ArticleSection>
-          ) : null}
-          {visibleToday.length === 0 && visibleYesterday.length === 0 ? (
-            <p className="text-body-default text-text-muted px-8">
-              No articles match these filters.
-            </p>
-          ) : null}
-        </div>
-      </CenterContainer>
-    </AppShell>
+      <div data-home-stage="feed" className="flex flex-col gap-24">
+        {visibleToday.length > 0 ? (
+          <ArticleSection label="Today">
+            {visibleToday.map((article) => (
+              <PresenceItem key={article.id}>
+                <FeedArticle article={article} />
+              </PresenceItem>
+            ))}
+          </ArticleSection>
+        ) : null}
+        {visibleYesterday.length > 0 ? (
+          <ArticleSection label="Yesterday">
+            {visibleYesterday.map((article) => (
+              <PresenceItem key={article.id}>
+                <FeedArticle article={article} />
+              </PresenceItem>
+            ))}
+          </ArticleSection>
+        ) : null}
+        <EmptyCopy
+          show={visibleToday.length === 0 && visibleYesterday.length === 0}
+        >
+          No articles match these filters.
+        </EmptyCopy>
+      </div>
+    </CenterContainer>
   )
 }

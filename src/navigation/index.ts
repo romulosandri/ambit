@@ -1,4 +1,5 @@
-export { NavigationProvider, handleAppLinkClick, useAppNav } from "./context"
+export { NavigationProvider, useAppNav } from "./context"
+export { handleAppLinkClick } from "./links"
 export {
   parseHash,
   previewTabFor,

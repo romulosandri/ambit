@@ -1,4 +1,6 @@
 import type { InputHTMLAttributes } from "react"
+import { motion } from "motion/react"
+import { microTransition } from "@/motion/config"
 import { cx } from "./cx"
 
 export type RadioProps = Omit<
@@ -39,10 +41,19 @@ export function Radio({
           "[input:checked:hover~&]:bg-bg-checkbox-active-hover",
           "peer-focus-visible:shadow-misc-focus",
           "peer-disabled:bg-bg-checkbox-disabled peer-disabled:border-border-default",
-          "[&>span]:hidden peer-checked:[&>span]:block",
+          checked === undefined && "[&>span]:hidden peer-checked:[&>span]:block",
         )}
       >
-        <span className="bg-bg-switch-handle size-6 rounded-full" />
+        {checked === undefined ? (
+          <span className="bg-bg-switch-handle size-6 rounded-full" />
+        ) : (
+          <motion.span
+            initial={false}
+            animate={checked ? { scale: 1, opacity: 1 } : { scale: 0.4, opacity: 0 }}
+            transition={microTransition}
+            className="bg-bg-switch-handle size-6 rounded-full"
+          />
+        )}
       </span>
     </span>
   )

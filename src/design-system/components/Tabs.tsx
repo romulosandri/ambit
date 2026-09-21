@@ -1,5 +1,6 @@
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react"
-import { forwardRef, type KeyboardEvent, type ReactNode } from "react"
+import { forwardRef, useId, type KeyboardEvent, type ReactNode } from "react"
+import { motion, useReducedMotion } from "motion/react"
 import { Icon } from "./Icon"
 import { cx } from "./cx"
 
@@ -13,8 +14,13 @@ export type TabItemProps = {
   onClick?: () => void
   /** `pill` is the filter popover; everywhere else is `rounded`. */
   shape?: TabItemShape
+  /** Shared layout id for the sliding selected pill. Omit on rail tabs. */
+  indicatorLayoutId?: string
   className?: string
 }
+
+const selectedFill =
+  "bg-bg-state-secondary shadow-[inset_0_0_0_1px_var(--ds-color-border-darker),var(--ds-shadow-component)]"
 
 export function TabItem({
   children,
@@ -23,8 +29,12 @@ export function TabItem({
   disabled = false,
   onClick,
   shape = "rounded",
+  indicatorLayoutId,
   className,
 }: TabItemProps) {
+  const reduce = useReducedMotion()
+  const sliding = Boolean(indicatorLayoutId)
+
   return (
     <button
       type="button"
@@ -34,19 +44,35 @@ export function TabItem({
       disabled={disabled}
       onClick={onClick}
       className={cx(
-        "inline-flex shrink-0 items-center justify-center gap-4 overflow-hidden px-10 py-6 outline-none",
+        "relative inline-flex shrink-0 items-center justify-center gap-4 overflow-hidden px-10 py-6 outline-none",
         shape === "pill" ? "rounded-full" : "rounded-sm",
         "focus-visible:shadow-misc-focus",
         "disabled:text-text-hint disabled:cursor-not-allowed",
         selected
-          // Inside stroke as an inset ring, so a selected tab stays 26px tall.
-          ? "bg-bg-state-secondary text-text-default shadow-[inset_0_0_0_1px_var(--ds-color-border-darker),var(--ds-shadow-component)]"
+          ? sliding
+            ? "text-text-default"
+            : cx(selectedFill, "text-text-default")
           : "bg-bg-state-ghost hover:bg-bg-state-ghost-hover active:bg-bg-state-ghost-press text-text-muted hover:text-text-default",
         className,
       )}
     >
-      {icon ? <Icon icon={icon} size={16} /> : null}
-      <span className="text-heading-subsection px-2 whitespace-nowrap">
+      {selected && sliding ? (
+        <motion.span
+          layoutId={indicatorLayoutId}
+          className={cx(
+            "absolute inset-0",
+            shape === "pill" ? "rounded-full" : "rounded-sm",
+            selectedFill,
+          )}
+          transition={
+            reduce
+              ? { duration: 0 }
+              : { type: "spring", stiffness: 520, damping: 42 }
+          }
+        />
+      ) : null}
+      {icon ? <Icon icon={icon} size={16} className="relative z-1" /> : null}
+      <span className="text-heading-subsection relative z-1 px-2 whitespace-nowrap">
         {children}
       </span>
     </button>
@@ -81,6 +107,8 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(function Tabs(
   },
   ref,
 ) {
+  const indicatorLayoutId = `${useId()}-indicator`
+
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     const enabled = items.filter((item) => !item.disabled)
     const current = enabled.findIndex((item) => item.value === value)
@@ -137,6 +165,7 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(function Tabs(
           selected={item.value === value}
           disabled={item.disabled}
           shape={shape === "pills" ? "pill" : "rounded"}
+          indicatorLayoutId={shape === "rail" ? undefined : indicatorLayoutId}
           onClick={() => onValueChange(item.value)}
         >
           {item.label}

@@ -2,7 +2,6 @@ import { useCallback, useState } from "react"
 import {
   FilterMenu,
   emptyFilterValue,
-  socialNames,
   type FilterChannelOption,
   type FilterOption,
   type FilterValue,
@@ -15,10 +14,15 @@ import {
 } from "@/data"
 import { useAppNav } from "@/navigation"
 
-const channelOptions: FilterChannelOption[] = socialNames.map((name) => ({
-  name,
-  label: name === "Twitter (X)" ? "X" : name,
-}))
+const channelOptions: FilterChannelOption[] = [
+  { name: "LinkedIn", label: "LinkedIn" },
+  { name: "Reddit", label: "Reddit" },
+  { name: "Medium", label: "Medium" },
+  { name: "Substack", label: "Substack" },
+  { name: "Facebook", label: "Facebook" },
+  { name: "Instagram", label: "Instagram" },
+  { name: "Twitter (X)", label: "X" },
+]
 
 const topicOptions: FilterOption[] = homeTopics.map((topic) => ({
   id: topic.id,

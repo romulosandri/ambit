@@ -528,6 +528,34 @@ export const articles: Article[] = [
   ...discoveryArticles,
 ]
 
-export const articlesById: Record<string, Article> = Object.fromEntries(
-  articles.map((article) => [article.id, article]),
-)
+const euCbam: Article = {
+  id: "eu-cbam",
+  title:
+    "EU carbon border tax kicks in as importers face new emissions costs on steel and cement",
+  type: "news",
+  source: { kind: "publisher", id: "reuters" },
+  topicIds: ["climate-compute"],
+  categories: ["climate", "policy"],
+  readTime: "4 min read",
+  time: "2h ago",
+  day: "today",
+  imageSrc: covers.europeanCommission,
+  body: [
+    "The EU Carbon Border Adjustment Mechanism is moving from reporting into real cost, with importers of steel, cement, aluminium, fertiliser, electricity and hydrogen buying certificates tied to the EU ETS.",
+  ],
+  surface: "discovery",
+  perspectives: [
+    {
+      id: "p-cbam-eu",
+      source: { kind: "publisher", id: "financial-times" },
+      imageSrc: covers.europeanCommission,
+      quote:
+        "CBAM is how Brussels prices carbon at the border so production does not simply move to a weaker climate rule.",
+    },
+  ],
+}
+
+export const articlesById: Record<string, Article> = {
+  ...Object.fromEntries(articles.map((article) => [article.id, article])),
+  [euCbam.id]: euCbam,
+}

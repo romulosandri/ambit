@@ -1,8 +1,6 @@
 import { Avatar, SearchInput } from "@ds"
 import {
-  AppShell,
   ArticleSection,
-  BottomContainer,
   CenterContainer,
   ToolBar,
 } from "@/layout"
@@ -11,19 +9,17 @@ import {
   getSourceEntity,
   parseSourceParam,
 } from "@/data"
+import { gsap, prefersReducedMotion, PresenceItem, useGSAP } from "@/motion"
 import { useAppNav } from "@/navigation"
-import { AppBackButton } from "./AppBackButton"
-import { AppSidebar } from "./AppSidebar"
 import { FeedArticle } from "./FeedArticle"
-import { useComposer } from "./useComposer"
 import { useFeedFilter } from "./useFeedFilter"
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 
 export function SourceDetailsScreen() {
   const { route } = useAppNav()
-  const composer = useComposer()
   const [query, setQuery] = useState("")
   const filter = useFeedFilter()
+  const rootRef = useRef<HTMLDivElement>(null)
   const param = route.name === "source" ? route.id : "person-sarah-guo"
   const ref = parseSourceParam(param) ?? {
     kind: "person" as const,
@@ -44,61 +40,68 @@ export function SourceDetailsScreen() {
   const today = feed.filter((article) => article.day === "today")
   const yesterday = feed.filter((article) => article.day === "yesterday")
 
+  useGSAP(
+    () => {
+      if (prefersReducedMotion()) return
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } })
+      tl.from("[data-read-stage='hero']", { y: 18, opacity: 0, duration: 0.5 })
+      tl.from(
+        "[data-read-stage='feed']",
+        { y: 14, opacity: 0, duration: 0.4 },
+        "-=0.22",
+      )
+    },
+    { scope: rootRef },
+  )
+
   return (
-    <AppShell
-      sidebar={<AppSidebar />}
-      topBar={<AppBackButton />}
-      dock={
-        <BottomContainer
-          model="Claude Opus 5"
-          value={composer.value}
-          onChange={composer.onChange}
-          onSubmit={composer.onSubmit}
-        />
-      }
-    >
-      <CenterContainer hasDock>
-        <div className="flex flex-col items-center gap-16 px-8">
-          {ref.kind === "person" ? (
-            <Avatar src={photo} name={entity?.name} size="md" className="size-72" />
-          ) : (
-            <Avatar src={logo} name={entity?.name} size="md" className="size-72" />
-          )}
-          <h1 className="text-display-small text-text-default text-center">
-            {entity?.name ?? "Source"}
-          </h1>
-          {entity && "role" in entity ? (
-            <p className="text-body-default text-text-muted text-center">
-              {entity.role}
-            </p>
-          ) : null}
-          <ToolBar
-            actions={filter.control}
-          >
-            <SearchInput
-              placeholder={`Find on ${entity?.name ?? "this source"}...`}
-              shortcut="/"
-              value={query}
-              onChange={(event) => setQuery(event.currentTarget.value)}
-              className="flex-1"
-            />
-          </ToolBar>
-        </div>
+    <CenterContainer ref={rootRef} hasDock>
+      <div data-read-stage="hero" className="flex flex-col items-center gap-16 px-8">
+        {ref.kind === "person" ? (
+          <Avatar src={photo} name={entity?.name} size="md" className="size-72" />
+        ) : (
+          <Avatar src={logo} name={entity?.name} size="md" className="size-72" />
+        )}
+        <h1 className="text-display-small text-text-default text-center">
+          {entity?.name ?? "Source"}
+        </h1>
+        {entity && "role" in entity ? (
+          <p className="text-body-default text-text-muted text-center">
+            {entity.role}
+          </p>
+        ) : null}
+        <ToolBar
+          actions={filter.control}
+        >
+          <SearchInput
+            placeholder={`Find on ${entity?.name ?? "this source"}...`}
+            shortcut="/"
+            value={query}
+            onChange={(event) => setQuery(event.currentTarget.value)}
+            className="flex-1"
+          />
+        </ToolBar>
+      </div>
+      <div data-read-stage="feed" className="flex flex-col gap-24">
         {today.length > 0 ? (
           <ArticleSection label="Today">
             {today.map((article) => (
-              <FeedArticle key={article.id} article={article} />
+              <PresenceItem key={article.id}>
+                <FeedArticle article={article} />
+              </PresenceItem>
             ))}
           </ArticleSection>
         ) : null}
         {yesterday.length > 0 ? (
           <ArticleSection label="Yesterday">
             {yesterday.map((article) => (
-              <FeedArticle key={article.id} article={article} />
+              <PresenceItem key={article.id}>
+                <FeedArticle article={article} />
+              </PresenceItem>
             ))}
           </ArticleSection>
         ) : null}
-      </CenterContainer>
-    </AppShell>
+      </div>
+    </CenterContainer>
   )
 }

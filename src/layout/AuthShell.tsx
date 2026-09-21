@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react"
+import { useState, type ReactNode, type Ref } from "react"
 import { Question } from "@phosphor-icons/react"
 import { Button, DropdownButton, LinkButton } from "@ds"
 import { cx } from "@ds/components/cx"
@@ -35,11 +35,13 @@ export function AuthShell({ children, className }: AuthShellProps) {
 export type AuthCardProps = {
   children: ReactNode
   className?: string
+  ref?: Ref<HTMLDivElement>
 }
 
-export function AuthCard({ children, className }: AuthCardProps) {
+export function AuthCard({ children, className, ref }: AuthCardProps) {
   return (
     <div
+      ref={ref}
       className={cx(
         "bg-bg-subtle shadow-modal-md w-400 max-w-full overflow-hidden rounded-card-md",
         className,

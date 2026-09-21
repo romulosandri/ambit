@@ -6,7 +6,10 @@ import { cx } from "./cx"
 export type LinkButtonProps = {
   children: ReactNode
   tone?: "muted" | "default" | "informative"
+  /** `sm` is the chat “Worked for…” link (body-small). Auth uses `md`. */
+  size?: "sm" | "md"
   leadIcon?: PhosphorIcon
+  tailIcon?: PhosphorIcon
   href?: string
   disabled?: boolean
   onClick?: () => void
@@ -18,7 +21,9 @@ export type LinkButtonProps = {
 export function LinkButton({
   children,
   tone = "muted",
+  size = "md",
   leadIcon,
+  tailIcon,
   href,
   disabled = false,
   onClick,
@@ -29,9 +34,15 @@ export function LinkButton({
   const content = (
     <>
       {leadIcon ? <Icon icon={leadIcon} size={16} /> : null}
-      <span className="text-heading-subsection whitespace-nowrap">
+      <span
+        className={cx(
+          "whitespace-nowrap",
+          size === "sm" ? "text-body-small" : "text-heading-subsection",
+        )}
+      >
         {children}
       </span>
+      {tailIcon ? <Icon icon={tailIcon} size={16} /> : null}
     </>
   )
 

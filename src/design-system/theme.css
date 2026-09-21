@@ -539,4 +539,12 @@
   --font-weight-bold: var(--ds-font-weight-bold);
   --font-weight-extrabold: var(--ds-font-weight-extrabold);
   --font-weight-black: var(--ds-font-weight-black);
+
+  --duration-fast: var(--ds-duration-fast);
+  --duration-normal: var(--ds-duration-normal);
+  --duration-slow: var(--ds-duration-slow);
+  --duration-dramatic: var(--ds-duration-dramatic);
+  --ease-standard: var(--ds-ease-standard);
+  --ease-enter: var(--ds-ease-enter);
+  --ease-exit: var(--ds-ease-exit);
 }

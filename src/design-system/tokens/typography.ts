@@ -145,15 +145,22 @@ export const textStyles = {
     fontFamily: "reading",
     fontSize: 14,
     fontWeight: 400,
-    lineHeight: 1.5,
-    letterSpacing: "0em",
+    lineHeight: 1.6,
+    letterSpacing: "0.01em",
   },
   bodyArticle: {
     fontFamily: "reading",
     fontSize: 16,
     fontWeight: 400,
-    lineHeight: 1.5,
-    letterSpacing: "0.02em",
+    lineHeight: 1.65,
+    letterSpacing: "0.01em",
+  },
+  bodyCard: {
+    fontFamily: "reading",
+    fontSize: 16,
+    fontWeight: 400,
+    lineHeight: 1.4,
+    letterSpacing: "0.01em",
   },
 } as const satisfies Record<string, TextStyleDefinition>
 

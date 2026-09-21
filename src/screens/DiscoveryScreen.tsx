@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import {
   FeaturedArticleCard,
   PlaylistCard,
@@ -6,9 +7,7 @@ import {
   TopicItem,
 } from "@ds"
 import {
-  AppShell,
   ArticleSection,
-  BottomContainer,
   CardRail,
   CenterContainer,
   PageHeader,
@@ -29,10 +28,9 @@ import {
   trendingTopics,
   type DiscoveryCategory,
 } from "@/data"
+import { Crossfade, PresenceItem } from "@/motion"
 import { useAppNav } from "@/navigation"
-import { AppSidebar } from "./AppSidebar"
 import { FeedArticle } from "./FeedArticle"
-import { useComposer } from "./useComposer"
 
 const discoveryTabs: { value: DiscoveryCategory; label: string }[] = [
   { value: "for-you", label: "For You" },
@@ -53,8 +51,8 @@ function PanelCard({
   header,
   children,
 }: {
-  header: React.ReactNode
-  children: React.ReactNode
+  header: ReactNode
+  children: ReactNode
 }) {
   return (
     <div className="bg-bg-card border-border-default flex flex-col gap-8 overflow-hidden rounded-card-md border p-8">
@@ -66,7 +64,6 @@ function PanelCard({
 
 export function DiscoveryScreen() {
   const { route, navigate } = useAppNav()
-  const composer = useComposer()
   const tabsRail = useRail()
   const sourcesRail = useRail()
   const topicsRail = useRail()
@@ -84,19 +81,8 @@ export function DiscoveryScreen() {
     .slice(0, 8)
 
   return (
-    <AppShell
-      sidebar={<AppSidebar activeItem="discovery" />}
-      dock={
-        <BottomContainer
-          model="Claude Opus 5"
-          value={composer.value}
-          onChange={composer.onChange}
-          onSubmit={composer.onSubmit}
-        />
-      }
-    >
-      <CenterContainer hasDock>
-        <PageHeader
+    <CenterContainer hasDock>
+      <PageHeader
           title="Discover what the world is reading"
           toolbar={
             <ToolBar
@@ -127,6 +113,7 @@ export function DiscoveryScreen() {
           }
         />
 
+        <Crossfade id={tab} className="flex flex-col gap-24">
         {featured ? (
           <FeaturedArticleCard
             title={featured.title}
@@ -221,10 +208,12 @@ export function DiscoveryScreen() {
 
         <ArticleSection label={tab === "for-you" ? "Today" : "Selected"}>
           {list.map((article) => (
-            <FeedArticle key={article.id} article={article} />
+            <PresenceItem key={article.id}>
+              <FeedArticle article={article} />
+            </PresenceItem>
           ))}
         </ArticleSection>
-      </CenterContainer>
-    </AppShell>
+        </Crossfade>
+    </CenterContainer>
   )
 }
