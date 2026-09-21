@@ -142,7 +142,12 @@ for (const [key, value] of Object.entries(fontSize)) {
     fontSizeMobile.push(`    --ds-font-size-${key}: ${value.mobile}px;`)
   }
   fontSizeTheme.push(`  --text-${key}: var(--ds-font-size-${key});`)
+  /* Size utilities must not impose a line-height. Figma leading lives on
+     the text-style classes (`text-body-default`, `text-display-small`, …). */
+  fontSizeTheme.push(`  --text-${key}--line-height: normal;`)
 }
+fontSizeTheme.push(`  --text-base: var(--ds-font-size-md);`)
+fontSizeTheme.push(`  --text-base--line-height: normal;`)
 
 const fontWeightLines = Object.entries(fontWeight).map(
   ([key, value]) => `  --ds-font-weight-${key}: ${value};`,
@@ -228,6 +233,7 @@ const themeCss = `/* Generated from src/design-system/tokens via emit-css.mjs. D
   --font-serif: var(--ds-font-headline);
   --font-headline: var(--ds-font-headline);
   --font-body: var(--ds-font-body);
+  --font-reading: var(--ds-font-reading);
 
 ${primitiveTheme.join("\n")}
 

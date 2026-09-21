@@ -1,5 +1,13 @@
 /* Generated from src/design-system/tokens via emit-css.mjs. Do not edit by hand. */
 
+@utility text-display-xl {
+  font-family: var(--ds-font-headline);
+  font-size: 48px;
+  font-weight: 400;
+  line-height: 0.8;
+  letter-spacing: -0.02em;
+}
+
 @utility text-display-large {
   font-family: var(--ds-font-headline);
   font-size: 36px;
@@ -40,6 +48,14 @@
   letter-spacing: 0em;
 }
 
+@utility text-heading-article {
+  font-family: var(--ds-font-headline);
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+}
+
 @utility text-body-large {
   font-family: var(--ds-font-body);
   font-size: 16px;
@@ -62,4 +78,20 @@
   font-weight: 400;
   line-height: 1.25;
   letter-spacing: 0em;
+}
+
+@utility text-body-reading {
+  font-family: var(--ds-font-body);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0em;
+}
+
+@utility text-body-article {
+  font-family: var(--ds-font-body);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
 }

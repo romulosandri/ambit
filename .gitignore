@@ -26,3 +26,6 @@ dist-ssr
 # Netlify
 .netlify
 
+# Figma reference renders and implementation captures used for visual checks
+.figma-refs
+

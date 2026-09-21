@@ -1,70 +1,87 @@
 @import "tailwindcss";
 @import "./design-system/index.css";
 
-html {
-  font-family: var(--ds-font-body);
-  font-size: var(--ds-font-size-md);
-  line-height: var(--ds-leading-6);
-  color: var(--ds-color-text-default);
-  background: var(--ds-color-bg-muted);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Base styles must live in `@layer base`. Unlayered rules beat anything in
+   Tailwind's utilities layer regardless of specificity, so a bare `h1 {}`
+   here would silently override `text-display-small` on a heading. */
+@layer base {
+  html {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-font-size-md);
+    font-weight: var(--ds-font-weight-normal);
+    /* Pixel leading on html inherits into any node that doesn't set its own.
+       Figma Auto is CSS `normal`; text-style utilities own the rest. */
+    line-height: normal;
+    letter-spacing: 0em;
+    color: var(--ds-color-text-default);
+    background: var(--ds-color-bg-muted);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-kerning: normal;
+    font-optical-sizing: auto;
+  }
+
+  body {
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  #root {
+    min-height: 100svh;
+  }
+
+  /* Typography comes from the design system's text utilities, so the base
+     layer only clears user-agent margins and inherited font sizing. */
+  :where(h1, h2, h3, h4, h5, h6, p, figure, blockquote) {
+    margin: 0;
+    font: inherit;
+  }
+
+  /* Firefox has no ::-webkit-scrollbar. Keep this block out of Chromium —
+     `scrollbar-width` there suppresses the custom pill below. */
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--ds-color-transparent-light-25) transparent;
+    }
+  }
 }
 
-body {
-  margin: 0;
+/* WebKit ignores ::-webkit-scrollbar inside @layer, so these stay unlayered.
+   `scrollbar-none` / `::-webkit-scrollbar:hidden` still win on hide targets. */
+::-webkit-scrollbar {
+  width: var(--ds-space-12);
+  height: var(--ds-space-12);
 }
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--ds-color-border-default);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-h1,
-h2 {
-  font-family: var(--ds-font-headline);
-  font-weight: var(--ds-font-weight-normal);
-  color: var(--ds-color-text-default);
+::-webkit-scrollbar-thumb {
+  background-color: var(--ds-color-transparent-light-25);
+  background-clip: content-box;
+  border: var(--ds-space-4) solid transparent;
+  border-radius: var(--ds-radius-full);
 }
 
-h1 {
-  font-size: var(--ds-font-size-4xl);
-  line-height: 0.8;
-  letter-spacing: -0.02em;
-  margin: var(--ds-space-32) 0;
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--ds-color-transparent-light-40);
 }
 
-h2 {
-  font-size: var(--ds-font-size-xl);
-  line-height: 1;
-  margin: 0 0 var(--ds-space-8);
+::-webkit-scrollbar-thumb:active {
+  background-color: var(--ds-color-transparent-light-50);
 }
 
-p {
-  margin: 0;
-  color: var(--ds-color-text-subtle);
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
-code,
-.counter {
-  display: inline-flex;
-  border-radius: var(--ds-radius-2xs);
-  color: var(--ds-color-text-default);
-}
-
-code {
-  font-family: inherit;
-  font-size: var(--ds-font-size-sm);
-  line-height: 1.35;
-  padding: var(--ds-space-4) var(--ds-space-8);
-  background: var(--ds-color-bg-card-subtle);
+::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
 }

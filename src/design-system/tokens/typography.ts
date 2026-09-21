@@ -5,6 +5,7 @@
 export const fontFamily = {
   headline: '"Concrette", "Concrette M-TRIAL", Georgia, serif',
   body: '"Saans", "Saans-TRIAL", system-ui, sans-serif',
+  reading: '"IBM Plex Sans", system-ui, sans-serif',
 } as const
 
 export const fontSize = {
@@ -70,6 +71,13 @@ export type TextStyleDefinition = {
 }
 
 export const textStyles = {
+  displayXl: {
+    fontFamily: "headline",
+    fontSize: 48,
+    fontWeight: 400,
+    lineHeight: 0.8,
+    letterSpacing: "-0.02em",
+  },
   displayLarge: {
     fontFamily: "headline",
     fontSize: 36,
@@ -105,6 +113,13 @@ export const textStyles = {
     lineHeight: 1,
     letterSpacing: "0em",
   },
+  headingArticle: {
+    fontFamily: "headline",
+    fontSize: 32,
+    fontWeight: 400,
+    lineHeight: 1.2,
+    letterSpacing: "0.02em",
+  },
   bodyLarge: {
     fontFamily: "body",
     fontSize: 16,
@@ -125,6 +140,20 @@ export const textStyles = {
     fontWeight: 400,
     lineHeight: 1.25,
     letterSpacing: "0em",
+  },
+  bodyReading: {
+    fontFamily: "reading",
+    fontSize: 14,
+    fontWeight: 400,
+    lineHeight: 1.5,
+    letterSpacing: "0em",
+  },
+  bodyArticle: {
+    fontFamily: "reading",
+    fontSize: 16,
+    fontWeight: 400,
+    lineHeight: 1.5,
+    letterSpacing: "0.02em",
   },
 } as const satisfies Record<string, TextStyleDefinition>
 
