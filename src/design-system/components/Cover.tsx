@@ -81,7 +81,7 @@ function CoverImage({
   useGSAP(
     (_, contextSafe) => {
       const image = imageRef.current
-      if (!image || !kenBurns) return
+      if (!image || !kenBurns || !contextSafe) return
 
       const setX = gsap.quickSetter(image, "x", "px")
       const setY = gsap.quickSetter(image, "y", "px")
