@@ -6,6 +6,7 @@
   --font-serif: var(--ds-font-headline);
   --font-headline: var(--ds-font-headline);
   --font-body: var(--ds-font-body);
+  --font-reading: var(--ds-font-reading);
 
   --color-red-50: var(--ds-color-red-50);
   --color-red-100: var(--ds-color-red-100);

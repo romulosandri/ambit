@@ -524,6 +524,7 @@
   /* Typography */
   --ds-font-headline: "Concrette", "Concrette M-TRIAL", Georgia, serif;
   --ds-font-body: "Saans", "Saans-TRIAL", system-ui, sans-serif;
+  --ds-font-reading: "IBM Plex Sans", system-ui, sans-serif;
   --ds-font-weight-light: 300;
   --ds-font-weight-normal: 400;
   --ds-font-weight-medium: 500;
