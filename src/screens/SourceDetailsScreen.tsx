@@ -10,17 +10,15 @@ import {
   parseSourceParam,
 } from "@/data"
 import { gsap, prefersReducedMotion, PresenceItem, useGSAP } from "@/motion"
-import { useAppNav } from "@/navigation"
 import { FeedArticle } from "./FeedArticle"
 import { useFeedFilter } from "./useFeedFilter"
 import { useMemo, useRef, useState } from "react"
 
-export function SourceDetailsScreen() {
-  const { route } = useAppNav()
+export function SourceDetailsScreen({ sourceId }: { sourceId: string }) {
   const [query, setQuery] = useState("")
   const filter = useFeedFilter()
   const rootRef = useRef<HTMLDivElement>(null)
-  const param = route.name === "source" ? route.id : "person-sarah-guo"
+  const param = sourceId
   const ref = parseSourceParam(param) ?? {
     kind: "person" as const,
     id: "sarah-guo",

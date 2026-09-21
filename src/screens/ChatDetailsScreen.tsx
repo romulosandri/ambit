@@ -1,11 +1,8 @@
 import { ArticleCardSmall, ChatBubble } from "@ds"
 import { CenterContainer } from "@/layout"
 import { articlesById, chatsById, sourceLogo, sourceName } from "@/data"
-import { useAppNav } from "@/navigation"
 
-export function ChatDetailsScreen() {
-  const { route } = useAppNav()
-  const chatId = route.name === "chat" ? route.id : "c-climate"
+export function ChatDetailsScreen({ chatId }: { chatId: string }) {
   const chat = chatsById[chatId] ?? chatsById["c-climate"]
 
   return (

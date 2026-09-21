@@ -403,6 +403,14 @@
   --ds-color-bg-basic-pink-accent: var(--ds-color-pink-500);
   --ds-color-bg-basic-pink-strong: var(--ds-color-pink-400);
   --ds-color-bg-basic-pink-contrast: var(--ds-color-pink-100);
+  --ds-color-bg-basic-mojo-subtle: var(--ds-color-mojo-900);
+  --ds-color-bg-basic-mojo-accent: var(--ds-color-mojo-500);
+  --ds-color-bg-basic-mojo-strong: var(--ds-color-mojo-400);
+  --ds-color-bg-basic-mojo-contrast: var(--ds-color-mojo-100);
+  --ds-color-bg-basic-cobblestone-subtle: var(--ds-color-cobblestone-900);
+  --ds-color-bg-basic-cobblestone-accent: var(--ds-color-cobblestone-500);
+  --ds-color-bg-basic-cobblestone-strong: var(--ds-color-cobblestone-400);
+  --ds-color-bg-basic-cobblestone-contrast: var(--ds-color-cobblestone-100);
   --ds-color-icon-default: var(--ds-color-cobblestone-00);
   --ds-color-icon-default-subtle: var(--ds-color-transparent-light-70);
   --ds-color-icon-default-muted: var(--ds-color-transparent-light-50);

@@ -2,16 +2,13 @@ import { AudioButton, Cover, Divider } from "@ds"
 import { CenterContainer } from "@/layout"
 import { articlesForBrief, briefsById, todayBrief } from "@/data"
 import { EmptyCopy, gsap, prefersReducedMotion, PresenceItem, PresenceList, useGSAP } from "@/motion"
-import { useAppNav } from "@/navigation"
 import { FeedArticle } from "./FeedArticle"
 import { useFeedFilter } from "./useFeedFilter"
 import { useRef } from "react"
 
-export function DailyBriefDetailsScreen() {
-  const { route } = useAppNav()
+export function DailyBriefDetailsScreen({ briefId }: { briefId: string }) {
   const filter = useFeedFilter()
   const rootRef = useRef<HTMLDivElement>(null)
-  const briefId = route.name === "brief" ? route.id : todayBrief.id
   const brief = briefsById[briefId] ?? todayBrief
   const feed = articlesForBrief(brief.id).filter(filter.match)
 

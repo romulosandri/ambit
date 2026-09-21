@@ -6,17 +6,14 @@ import {
 } from "@/layout"
 import { articlesForTopic, topicsById } from "@/data"
 import { gsap, prefersReducedMotion, PresenceItem, useGSAP } from "@/motion"
-import { useAppNav } from "@/navigation"
 import { FeedArticle } from "./FeedArticle"
 import { useFeedFilter } from "./useFeedFilter"
 import { useMemo, useRef, useState } from "react"
 
-export function TopicDetailsScreen() {
-  const { route } = useAppNav()
+export function TopicDetailsScreen({ topicId }: { topicId: string }) {
   const [query, setQuery] = useState("")
   const filter = useFeedFilter()
   const rootRef = useRef<HTMLDivElement>(null)
-  const topicId = route.name === "topic" ? route.id : "ai-agents"
   const topic = topicsById[topicId] ?? topicsById["ai-agents"]
   const feed = useMemo(() => {
     const list = articlesForTopic(topic.id)

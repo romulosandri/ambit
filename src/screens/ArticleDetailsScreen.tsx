@@ -6,6 +6,7 @@ import {
   Badge,
   Button,
   DropdownButton,
+  Image,
   LinkButton,
   SourceLine,
   socialLogos,
@@ -44,13 +45,12 @@ const typeBadge = {
   post: { label: "Post", color: "pink" as const },
 }
 
-export function ArticleDetailsScreen() {
-  const { route, savedIds, toggleSaved } = useAppNav()
+export function ArticleDetailsScreen({ articleId }: { articleId: string }) {
+  const { savedIds, toggleSaved } = useAppNav()
   const perspectivesRail = useRail()
   const rootRef = useRef<HTMLDivElement>(null)
   const [perspectiveFilter, setPerspectiveFilter] =
     useState<PerspectiveFilter>("all")
-  const articleId = route.name === "article" ? route.id : featuredArticle.id
   const article = articlesById[articleId] ?? featuredArticle
   const badge = typeBadge[article.type]
   const saved = savedIds.has(article.id)
@@ -189,7 +189,7 @@ export function ArticleDetailsScreen() {
       </section>
 
       <div data-read-stage="body" className="flex flex-col gap-24">
-        <img
+        <Image
           src={article.imageSrc}
           alt=""
           className="rounded-md h-260 w-full object-cover max-md:h-180"

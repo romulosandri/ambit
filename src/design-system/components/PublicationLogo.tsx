@@ -1,6 +1,7 @@
 import { socialLogos } from "../assets"
 import type { PublicationName, SocialName } from "./brands"
 import { cx } from "./cx"
+import { Image } from "./Image"
 
 export type BrandMarkProps = {
   name: string
@@ -31,7 +32,7 @@ function BrandMark({
       )}
     >
       {src ? (
-        <img
+        <Image
           src={src}
           alt={labelled ? name : ""}
           className="size-full object-cover"

@@ -1,6 +1,7 @@
 import { Check } from "@phosphor-icons/react"
 import { flowerCovers } from "../assets"
 import { cx } from "./cx"
+import { Image } from "./Image"
 
 export type BackgroundPickerProps = {
   value?: number
@@ -41,7 +42,7 @@ export function BackgroundPicker({
                     : "rounded-md",
                 )}
               >
-                <img
+                <Image
                   src={src}
                   alt=""
                   className="absolute inset-0 size-full object-cover"

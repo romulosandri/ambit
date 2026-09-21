@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 import { Button } from "./Button"
+import { Image } from "./Image"
 
 export type SocialBrand = "apple" | "google" | "x" | "github"
 
@@ -46,7 +47,7 @@ export function SocialButton({
       leadIcon={undefined}
     >
       {markSrc ? (
-        <img src={markSrc} alt="" aria-hidden className="mr-2 size-16" />
+        <Image src={markSrc} alt="" aria-hidden className="mr-2 size-16" />
       ) : null}
       {children ?? brandLabel[brand]}
     </Button>

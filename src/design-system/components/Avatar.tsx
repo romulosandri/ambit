@@ -1,4 +1,5 @@
 import { cx } from "./cx"
+import { Image } from "./Image"
 
 export type AvatarSize = "xs" | "md"
 
@@ -39,7 +40,7 @@ export function Avatar({ src, name = "", size = "xs", className }: AvatarProps) 
       )}
     >
       {src ? (
-        <img src={src} alt={name} className="size-full object-cover" />
+        <Image src={src} alt={name} className="size-full object-cover" />
       ) : (
         <span className={initialsClass[size]}>{initialsOf(name)}</span>
       )}

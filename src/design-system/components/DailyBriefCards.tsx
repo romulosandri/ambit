@@ -91,6 +91,7 @@ export function DailyBriefHorizontalCard({
         size="xl"
         overline={month}
         caption={date}
+        insetHighlight
         className="max-md:h-180 max-md:min-w-0 max-md:w-full"
       />
       {/* items-start keeps the AudioButton hugging its content instead of

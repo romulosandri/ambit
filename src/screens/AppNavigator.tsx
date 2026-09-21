@@ -56,25 +56,25 @@ function SignedInScreen({ route }: { route: AppRoute }) {
       return <DailyBriefsScreen />
     case "brief":
       if (!briefsById[route.id]) return <DailyBriefsScreen />
-      return <DailyBriefDetailsScreen />
+      return <DailyBriefDetailsScreen briefId={route.id} />
     case "chats":
       return <ChatsScreen />
     case "chat":
       if (route.id === "new") return <NewChatScreen />
       if (!chatsById[route.id]) return <ChatsScreen />
-      return <ChatDetailsScreen />
+      return <ChatDetailsScreen chatId={route.id} />
     case "subscriptions":
       return <SubscriptionsScreen />
     case "saved":
       return <SavedScreen />
     case "topic":
       if (!topicsById[route.id]) return <HomeScreen />
-      return <TopicDetailsScreen />
+      return <TopicDetailsScreen topicId={route.id} />
     case "source":
-      return <SourceDetailsScreen />
+      return <SourceDetailsScreen sourceId={route.id} />
     case "article":
       if (!articlesById[route.id]) return <HomeScreen />
-      return <ArticleDetailsScreen />
+      return <ArticleDetailsScreen articleId={route.id} />
     case "auth":
       return <AuthScreen />
     default: {
