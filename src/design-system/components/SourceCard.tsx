@@ -1,7 +1,6 @@
 import { PublicationLogo } from "./PublicationLogo"
 import { CardLink, cardLinkRootClassName } from "./CardLink"
 import { cx } from "./cx"
-import { PressableArticle } from "@/motion"
 
 export type SourceCardProps = {
   name: string
@@ -12,7 +11,7 @@ export type SourceCardProps = {
 
 export function SourceCard({ name, logoSrc, href, className }: SourceCardProps) {
   return (
-    <PressableArticle
+    <article
       className={cx(
         "bg-bg-state-ghost hover:bg-bg-state-ghost-hover flex flex-col items-center gap-8 rounded-md p-8",
         href && cardLinkRootClassName,
@@ -32,6 +31,6 @@ export function SourceCard({ name, logoSrc, href, className }: SourceCardProps) 
       <span className="text-body-small text-text-subtle max-w-full truncate">
         {href ? <CardLink href={href}>{name}</CardLink> : name}
       </span>
-    </PressableArticle>
+    </article>
   )
 }

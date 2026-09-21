@@ -122,11 +122,11 @@ export function NewSubscriptionModal({
       aria-modal="true"
       aria-labelledby="subscription-modal-title"
       className={cx(
-        "bg-bg-muted shadow-modal-sm flex max-h-full w-520 min-h-0 max-w-full flex-col overflow-hidden rounded-card-md",
+        "bg-bg-muted shadow-modal-sm flex max-h-[calc(100svh-80px)] min-h-0 w-520 max-w-full flex-col overflow-hidden rounded-card-md max-md:max-h-[calc(100svh-32px)]",
         className,
       )}
     >
-      <div className="flex min-h-0 flex-1 flex-col gap-24 overflow-y-auto p-24">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain p-24">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={step}
@@ -134,7 +134,7 @@ export function NewSubscriptionModal({
             animate={{ opacity: 1, y: 0 }}
             exit={reduce ? { opacity: 0 } : { opacity: 0, y: -6 }}
             transition={presenceTransition}
-            className="flex min-h-0 flex-1 flex-col gap-24"
+            className="flex shrink-0 flex-col gap-24"
           >
             {step === "choose" ? (
               <ChooseStep kind={kind} onKindChange={setKind} />
@@ -172,7 +172,7 @@ export function NewSubscriptionModal({
           </motion.div>
         </AnimatePresence>
       </div>
-      <div className="border-border-default bg-bg-muted flex items-center justify-end gap-12 overflow-hidden border-t p-16">
+      <div className="border-border-default bg-bg-muted flex shrink-0 items-center justify-end gap-12 overflow-hidden border-t p-16">
         <Button style="soft" onClick={onCancel}>
           Cancel
         </Button>
@@ -420,7 +420,7 @@ function ChannelSection({
     <>
       <h3 className="text-heading-page text-text-default">Channels</h3>
       <p className="text-body-default text-text-muted">{description}</p>
-      <div className="flex w-full flex-col overflow-hidden">
+      <div className="flex w-full shrink-0 flex-col overflow-hidden">
         {channels.map((channel) => (
           <ChannelRow
             key={channel.name}

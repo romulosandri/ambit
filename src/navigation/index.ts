@@ -5,5 +5,6 @@ export {
   previewTabFor,
   routeForPreviewTab,
   serializeRoute,
+  withoutModal,
 } from "./routes"
 export type { AppRoute, PreviewTab } from "./types"

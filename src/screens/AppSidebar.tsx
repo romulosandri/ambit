@@ -27,7 +27,7 @@ function writeCollapsed(collapsed: boolean) {
 let collapsedMemory = readCollapsed()
 
 export function AppSidebar({ activeItem }: { activeItem?: SidebarItemId }) {
-  const { navigate } = useAppNav()
+  const { navigate, openSubscription } = useAppNav()
   const drawer = useNavDrawer()
   const [collapsed, setCollapsed] = useState(collapsedMemory)
 
@@ -63,7 +63,7 @@ export function AppSidebar({ activeItem }: { activeItem?: SidebarItemId }) {
   }
 
   function handleAddSubscription() {
-    navigate({ name: "subscriptions", modal: "choose" })
+    openSubscription("choose")
     drawer?.close()
   }
 

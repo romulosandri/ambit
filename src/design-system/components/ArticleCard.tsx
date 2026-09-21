@@ -5,7 +5,6 @@ import { Cover } from "./Cover"
 import { SaveControl } from "./SaveButton"
 import type { SocialName } from "./brands"
 import { cx } from "./cx"
-import { PressableArticle } from "@/motion"
 
 export type ArticleType = "news" | "articles" | "post"
 
@@ -53,7 +52,7 @@ export function ArticleCard({
   const resolvedBadge = badge ?? typeBadge[type]
 
   return (
-    <PressableArticle
+    <article
       className={cx(
         "group bg-bg-state-ghost hover:bg-bg-state-ghost-hover flex h-148 w-full items-center gap-6 rounded-md p-16 max-md:h-auto max-md:items-start",
         href && cardLinkRootClassName,
@@ -89,6 +88,6 @@ export function ArticleCard({
       </div>
       {/* 116px square: the 148px card height minus its 16px padding. */}
       <Cover src={imageSrc} size="md" radius="sm" />
-    </PressableArticle>
+    </article>
   )
 }

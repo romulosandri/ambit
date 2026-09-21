@@ -2,7 +2,6 @@ import { Cover } from "./Cover"
 import { CardLink, cardLinkRootClassName } from "./CardLink"
 import { SaveControl } from "./SaveButton"
 import { cx } from "./cx"
-import { PressableArticle } from "@/motion"
 
 export type PlaylistCardProps = {
   title: string
@@ -25,7 +24,7 @@ export function PlaylistCard({
   className,
 }: PlaylistCardProps) {
   return (
-    <PressableArticle
+    <article
       // Width comes from the rail or grid that owns the card (180px / 210px in
       // Figma), so it is deliberately not set here.
       className={cx(
@@ -48,6 +47,6 @@ export function PlaylistCard({
       <h3 className="text-heading-subsection text-text-default w-full truncate">
         {href ? <CardLink href={href}>{title}</CardLink> : title}
       </h3>
-    </PressableArticle>
+    </article>
   )
 }

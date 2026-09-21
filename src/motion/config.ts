@@ -31,5 +31,40 @@ export const microTransition = {
   ease: presenceEase,
 }
 
+/** Width of the desktop nav rail. Shared by the spring and the copy fade. */
+export const railWidth = {
+  expanded: 280,
+  collapsed: 64,
+} as const
+
+/** Slightly underdamped so the rail and drawer settle with a little life. */
+export const railSpring = {
+  type: "spring" as const,
+  stiffness: 320,
+  damping: 26,
+  mass: 0.75,
+} as const
+
+/** Drawer travels farther than the rail, so it damps a bit sooner. */
+export const drawerSpring = {
+  type: "spring" as const,
+  stiffness: 380,
+  damping: 34,
+  mass: 0.85,
+} as const
+
+export function railCopyTransition(visible: boolean, delay = 0) {
+  return {
+    duration: visible ? motionDuration.normal : motionDuration.fast,
+    ease: presenceEase,
+    delay,
+  }
+}
+
+export function railItemDelay(index: number, collapsed: boolean) {
+  if (collapsed) return Math.min(index * 0.016, 0.12)
+  return 0.05 + index * 0.03
+}
+
 export const presenceOffset = 12
 export const microOffset = 8

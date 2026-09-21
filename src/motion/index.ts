@@ -5,6 +5,11 @@ export {
   presenceTransition,
   overlayTransition,
   microTransition,
+  railWidth,
+  railSpring,
+  drawerSpring,
+  railCopyTransition,
+  railItemDelay,
   presenceOffset,
   microOffset,
 } from "./config"
@@ -14,7 +19,7 @@ export {
   PresenceList,
   PresenceItem,
   Crossfade,
+  RailCopy,
   EmptyCopy,
 } from "./presence"
 export { AnimatePresence, motion, useReducedMotion } from "motion/react"
-export { PressableArticle } from "./press"

@@ -48,8 +48,10 @@ export type AuthView =
 
 export function AuthScreen({
   initialView = "sign-in",
+  playEntrance = true,
 }: {
   initialView?: AuthView
+  playEntrance?: boolean
 }) {
   const [view, setView] = useState<AuthView>(initialView)
   const { navigate } = useAppNav()
@@ -60,15 +62,21 @@ export function AuthScreen({
   const { contextSafe } = useGSAP(
     () => {
       if (prefersReducedMotion()) return
+      const card = cardRef.current
+      const items = rootRef.current?.querySelectorAll("[data-auth-stagger]")
+      if (!card) return
+
+      gsap.set(card, { y: 28, opacity: 0 })
+      if (items?.length) gsap.set(items, { y: 12, opacity: 0 })
+      if (!playEntrance) return
+
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } })
-      tl.from(cardRef.current, { y: 28, opacity: 0, duration: 0.55 })
-      tl.from(
-        "[data-auth-stagger]",
-        { y: 12, opacity: 0, duration: 0.4, stagger: 0.06 },
-        "-=0.28",
-      )
+      tl.to(card, { y: 0, opacity: 1, duration: 0.55 })
+      if (items?.length) {
+        tl.to(items, { y: 0, opacity: 1, duration: 0.4, stagger: 0.06 }, "-=0.28")
+      }
     },
-    { scope: rootRef },
+    { scope: rootRef, dependencies: [playEntrance] },
   )
 
   const enterApp = contextSafe(() => {

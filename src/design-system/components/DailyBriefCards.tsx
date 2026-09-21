@@ -4,7 +4,6 @@ import { CardLink, cardLinkControlClassName, cardLinkRootClassName } from "./Car
 import { Cover } from "./Cover"
 import { SaveButton, SaveControl } from "./SaveButton"
 import { cx } from "./cx"
-import { PressableArticle } from "@/motion"
 
 export type DailyBriefVerticalCardProps = {
   title: string
@@ -28,7 +27,7 @@ export function DailyBriefVerticalCard({
   className,
 }: DailyBriefVerticalCardProps) {
   return (
-    <PressableArticle
+    <article
       // Width comes from the rail or grid that owns the card, as in Figma.
       className={cx(
         "group bg-bg-state-ghost hover:bg-bg-state-ghost-hover flex min-w-0 flex-col gap-12 rounded-md p-8",
@@ -50,7 +49,7 @@ export function DailyBriefVerticalCard({
       <h3 className="text-heading-subsection text-text-default w-full truncate">
         {href ? <CardLink href={href}>{title}</CardLink> : title}
       </h3>
-    </PressableArticle>
+    </article>
   )
 }
 
@@ -80,7 +79,7 @@ export function DailyBriefHorizontalCard({
   className,
 }: DailyBriefHorizontalCardProps) {
   return (
-    <PressableArticle
+    <article
       className={cx(
         "group bg-bg-state-ghost hover:bg-bg-state-ghost-hover flex w-full items-center gap-16 rounded-md py-8 pr-16 pl-8 max-md:flex-col max-md:items-stretch max-md:pr-8",
         (href || onSave) && cardLinkRootClassName,
@@ -134,6 +133,6 @@ export function DailyBriefHorizontalCard({
           <SaveButton saved={saved} onSave={onSave} label="brief" />
         ) : null}
       </div>
-    </PressableArticle>
+    </article>
   )
 }

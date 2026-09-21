@@ -10,7 +10,7 @@ import { SidebarSimple } from "@phosphor-icons/react"
 import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 import { Button } from "@ds"
 import { cx } from "@ds/components/cx"
-import { overlayTransition } from "@/motion/config"
+import { drawerSpring, overlayTransition } from "@/motion/config"
 import { NavDrawerContext } from "./NavDrawerContext"
 import { COMPACT_NAV_QUERY, useMediaQuery } from "./useMediaQuery"
 
@@ -105,11 +105,7 @@ export function AppShell({
           aria-hidden={drawerHidden}
           initial={false}
           animate={compact ? { x: open ? 0 : "-100%" } : { x: 0 }}
-          transition={
-            reduce
-              ? { duration: 0 }
-              : { type: "spring", stiffness: 420, damping: 38 }
-          }
+          transition={reduce ? { duration: 0 } : drawerSpring}
           className={cx(
             "flex h-full w-fit shrink-0 flex-col",
             "max-lg:absolute max-lg:inset-y-0 max-lg:left-0 max-lg:z-30 max-lg:w-280 max-lg:shadow-modal-md",

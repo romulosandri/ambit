@@ -77,15 +77,21 @@ export function ArticleDetailsScreen() {
     () => {
       if (prefersReducedMotion()) return
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } })
-      tl.from("[data-read-stage='hero']", { y: 18, opacity: 0, duration: 0.5 })
-      tl.from(
+      tl.fromTo(
+        "[data-read-stage='hero']",
+        { y: 18, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.5 },
+      )
+      tl.fromTo(
         "[data-read-stage='rail']",
-        { y: 14, opacity: 0, duration: 0.4 },
+        { y: 14, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.4 },
         "-=0.24",
       )
-      tl.from(
+      tl.fromTo(
         "[data-read-stage='body']",
-        { y: 16, opacity: 0, duration: 0.45 },
+        { y: 16, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.45 },
         "-=0.22",
       )
     },

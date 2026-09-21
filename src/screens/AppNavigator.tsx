@@ -1,5 +1,7 @@
+import { useState } from "react"
 import { articlesById, briefsById, chatsById, topicsById } from "@/data"
 import { useAppNav } from "@/navigation"
+import type { AppRoute } from "@/navigation/types"
 import { ArticleDetailsScreen } from "./ArticleDetailsScreen"
 import { AuthScreen } from "./AuthScreen"
 import { ChatDetailsScreen } from "./ChatDetailsScreen"
@@ -12,26 +14,39 @@ import { NewChatScreen } from "./NewChatScreen"
 import { SavedScreen } from "./SavedScreen"
 import { SignedInShell } from "./SignedInShell"
 import { SourceDetailsScreen } from "./SourceDetailsScreen"
+import { SplashScreen } from "./SplashScreen"
 import { SubscriptionsScreen } from "./SubscriptionsScreen"
 import { TopicDetailsScreen } from "./TopicDetailsScreen"
 
 export function AppNavigator() {
   const { route } = useAppNav()
+  const [splash, setSplash] = useState(() => route.name === "auth")
+  const [authReady, setAuthReady] = useState(() => route.name !== "auth")
 
   if (route.name === "auth") {
-    return <AuthScreen />
+    return (
+      <div className="relative h-full overflow-hidden">
+        <div className="h-full" inert={splash && !authReady ? true : undefined}>
+          <AuthScreen playEntrance={authReady} />
+        </div>
+        {splash ? (
+          <SplashScreen
+            onReveal={() => setAuthReady(true)}
+            onComplete={() => setSplash(false)}
+          />
+        ) : null}
+      </div>
+    )
   }
 
   return (
     <SignedInShell>
-      <SignedInScreen />
+      <SignedInScreen route={route} />
     </SignedInShell>
   )
 }
 
-function SignedInScreen() {
-  const { route } = useAppNav()
-
+function SignedInScreen({ route }: { route: AppRoute }) {
   switch (route.name) {
     case "home":
       return <HomeScreen />

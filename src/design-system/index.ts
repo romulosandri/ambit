@@ -20,8 +20,10 @@ export {
 export * from "./components"
 export {
   ambitLogo,
+  ambitMark,
   flowerCoverFor,
   flowerCovers,
+  homeFlower,
   lauraLee,
   perspectivePhotos,
   sarahGuo,

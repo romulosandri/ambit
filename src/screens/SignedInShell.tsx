@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import { useLayoutEffect, useRef, type ReactNode } from "react"
 import { ModalOverlay, NewSubscriptionModal, type SidebarItemId } from "@ds"
 import { AppShell, BottomContainer } from "@/layout"
 import {
@@ -159,7 +159,7 @@ function SignedInTopBar({ route }: { route: AppRoute }) {
   }
 }
 
-function ScreenPresence({
+function ScreenFrame({
   route,
   children,
 }: {
@@ -168,46 +168,56 @@ function ScreenPresence({
 }) {
   const reduce = useReducedMotion()
   const dramatic = isDramaticRoute(route)
+  const rootRef = useRef<HTMLDivElement>(null)
+
+  useLayoutEffect(() => {
+    rootRef.current?.parentElement?.scrollTo({ top: 0 })
+  }, [route])
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      <motion.div
-        key={presenceKey(route)}
-        initial={
-          reduce ? false : dramatic ? { opacity: 0 } : { opacity: 0, y: presenceOffset }
-        }
-        animate={{ opacity: 1, y: 0 }}
-        exit={
-          reduce
+    <motion.div
+      ref={rootRef}
+      initial={
+        reduce ? false : dramatic ? { opacity: 0 } : { opacity: 0, y: presenceOffset }
+      }
+      animate={{ opacity: 1, y: 0 }}
+      exit={
+        reduce
+          ? { opacity: 0 }
+          : dramatic
             ? { opacity: 0 }
-            : dramatic
-              ? { opacity: 0 }
-              : { opacity: 0, y: 8 }
-        }
-        transition={presenceTransition}
-        className="flex min-h-full flex-1 flex-col"
-      >
+            : { opacity: 0, y: 8 }
+      }
+      transition={presenceTransition}
+      className="flex min-h-full flex-1 flex-col"
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+function ScreenPresence({
+  route,
+  children,
+}: {
+  route: AppRoute
+  children: ReactNode
+}) {
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <ScreenFrame key={presenceKey(route)} route={route}>
         {children}
-      </motion.div>
+      </ScreenFrame>
     </AnimatePresence>
   )
 }
 
 export function SignedInShell({ children }: { children: ReactNode }) {
-  const { route, navigate } = useAppNav()
+  const { route, openSubscription, closeSubscription } = useAppNav()
   const composer = useComposer()
   const reduce = useReducedMotion()
   const showDock = routeHasDock(route)
-  const subscriptionStep =
-    route.name === "subscriptions" ? (route.modal ?? null) : null
-  const tab =
-    route.name === "subscriptions" && route.tab === "sources"
-      ? "sources"
-      : "topics"
-
-  function closeModal() {
-    navigate({ name: "subscriptions", tab })
-  }
+  const subscriptionStep = route.modal ?? null
 
   return (
     <AppShell
@@ -239,16 +249,14 @@ export function SignedInShell({ children }: { children: ReactNode }) {
         </AnimatePresence>
       }
       overlay={
-        <ModalOverlay open={subscriptionStep !== null} onClose={closeModal}>
+        <ModalOverlay open={subscriptionStep !== null} onClose={closeSubscription}>
           {subscriptionStep ? (
             <NewSubscriptionModal
               step={subscriptionStep}
-              onStepChange={(next) =>
-                navigate({ name: "subscriptions", tab, modal: next })
-              }
-              onCancel={closeModal}
-              onCreateTopic={closeModal}
-              onCreateSource={closeModal}
+              onStepChange={openSubscription}
+              onCancel={closeSubscription}
+              onCreateTopic={closeSubscription}
+              onCreateSource={closeSubscription}
             />
           ) : null}
         </ModalOverlay>

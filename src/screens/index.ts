@@ -1,5 +1,6 @@
 export { AppNavigator } from "./AppNavigator"
 export { AuthScreen } from "./AuthScreen"
+export { SplashScreen } from "./SplashScreen"
 export { ArticleDetailsScreen } from "./ArticleDetailsScreen"
 export { ChatDetailsScreen } from "./ChatDetailsScreen"
 export { ChatsScreen } from "./ChatsScreen"

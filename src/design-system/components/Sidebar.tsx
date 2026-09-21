@@ -15,6 +15,16 @@ import {
   UserCircle,
 } from "@phosphor-icons/react"
 import { useId, useRef, useState } from "react"
+import {
+  microOffset,
+  motion,
+  motionDuration,
+  RailCopy,
+  railItemDelay,
+  railSpring,
+  railWidth,
+  useReducedMotion,
+} from "@/motion"
 import { Avatar } from "./Avatar"
 import { Badge } from "./Badge"
 import { Button } from "./Button"
@@ -62,6 +72,12 @@ const primaryItems = [
   { id: "saved", label: "Saved", icon: BookmarkSimple },
 ] satisfies { id: SidebarItemId; label: string; icon: typeof House }[]
 
+const SETTINGS_INDEX = primaryItems.length
+const WIDGETS_INDEX = SETTINGS_INDEX + 1
+const SUBSCRIPTIONS_INDEX = WIDGETS_INDEX + 1
+const CUSTOMIZE_INDEX = SUBSCRIPTIONS_INDEX + 1
+const ACCOUNT_INDEX = CUSTOMIZE_INDEX + 1
+
 export function Sidebar({
   activeItem,
   user,
@@ -78,6 +94,7 @@ export function Sidebar({
   const accountTriggerRef = useRef<HTMLButtonElement>(null)
   const accountTriggerId = useId()
   const [accountOpen, setAccountOpen] = useState(false)
+  const reduce = useReducedMotion()
 
   function handleAccountAction(id: AccountActionId) {
     setAccountOpen(false)
@@ -85,21 +102,44 @@ export function Sidebar({
   }
 
   return (
-    <nav
+    <motion.nav
       aria-label="Main"
+      initial={false}
+      animate={{ width: collapsed ? railWidth.collapsed : railWidth.expanded }}
+      transition={reduce ? { duration: 0 } : railSpring}
       className={cx(
-        "bg-bg-muted flex h-full shrink-0 flex-col items-start overflow-hidden transition-[width] duration-200 motion-reduce:transition-none",
-        collapsed ? "w-64" : "w-280",
+        "bg-bg-muted flex h-full shrink-0 flex-col items-start overflow-hidden",
         className,
       )}
     >
-      <div
-        className={cx(
-          "flex w-full items-center p-16",
-          collapsed ? "justify-end" : "justify-between",
-        )}
-      >
-        {collapsed ? null : <Logo src={logoSrc} />}
+      <div className="flex w-full items-center justify-between p-16">
+        <motion.div
+          initial={false}
+          animate={
+            collapsed
+              ? { opacity: 0, x: -microOffset, width: 0 }
+              : { opacity: 1, x: 0, width: 85 }
+          }
+          transition={
+            reduce
+              ? { duration: 0 }
+              : {
+                  width: railSpring,
+                  opacity: {
+                    duration: collapsed ? motionDuration.fast : motionDuration.normal,
+                    delay: collapsed ? 0 : 0.04,
+                  },
+                  x: {
+                    duration: collapsed ? motionDuration.fast : motionDuration.normal,
+                    delay: collapsed ? 0 : 0.04,
+                  },
+                }
+          }
+          className="overflow-hidden shrink-0"
+          aria-hidden={collapsed || undefined}
+        >
+          <Logo src={logoSrc} />
+        </motion.div>
         <Button
           iconOnly
           size="md"
@@ -113,12 +153,13 @@ export function Sidebar({
 
       <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden">
         <ul className="flex w-full flex-col gap-2 px-16 pt-16 pb-8">
-          {primaryItems.map((item) => (
+          {primaryItems.map((item, index) => (
             <li key={item.id}>
               <SidebarMenuItem
                 icon={item.icon}
                 active={activeItem === item.id}
                 collapsed={collapsed}
+                copyDelay={railItemDelay(index, collapsed)}
                 onClick={() => onNavigate?.(item.id)}
               >
                 {item.label}
@@ -128,17 +169,33 @@ export function Sidebar({
         </ul>
 
         <ul className="flex w-full flex-col gap-2 px-16 py-12">
-          {collapsed ? null : (
-            <li>
-              <SidebarMenuItem variant="header">Settings</SidebarMenuItem>
-            </li>
-          )}
+          <motion.li
+            initial={false}
+            animate={
+              collapsed
+                ? { height: 0, opacity: 0 }
+                : { height: "auto", opacity: 1 }
+            }
+            transition={
+              reduce
+                ? { duration: 0 }
+                : {
+                    duration: collapsed ? 0.16 : 0.24,
+                    delay: railItemDelay(SETTINGS_INDEX, collapsed),
+                  }
+            }
+            className="overflow-hidden"
+            aria-hidden={collapsed || undefined}
+          >
+            <SidebarMenuItem variant="header">Settings</SidebarMenuItem>
+          </motion.li>
           <li>
             <SidebarMenuItem
               icon={SquaresFour}
               tone="muted"
               trailingLabel="Soon"
               collapsed={collapsed}
+              copyDelay={railItemDelay(WIDGETS_INDEX, collapsed)}
               disabled
             >
               Widgets
@@ -149,6 +206,7 @@ export function Sidebar({
               icon={Images}
               active={activeItem === "subscriptions"}
               collapsed={collapsed}
+              copyDelay={railItemDelay(SUBSCRIPTIONS_INDEX, collapsed)}
               badge={
                 subscriptionCount === undefined ? undefined : (
                   <Badge>{subscriptionCount}</Badge>
@@ -169,6 +227,7 @@ export function Sidebar({
               icon={Gear}
               active={activeItem === "customize"}
               collapsed={collapsed}
+              copyDelay={railItemDelay(CUSTOMIZE_INDEX, collapsed)}
               onClick={() => onNavigate?.("customize")}
             >
               Customize
@@ -177,8 +236,8 @@ export function Sidebar({
         </ul>
       </div>
 
-      <div className="flex w-full items-center gap-8 p-16">
-        <button
+      <div className="flex w-full items-center gap-8 overflow-hidden p-16">
+        <motion.button
           ref={accountTriggerRef}
           id={accountTriggerId}
           type="button"
@@ -190,26 +249,33 @@ export function Sidebar({
             setAccountOpen((open) => !open)
             onAccountClick?.()
           }}
+          initial={false}
+          animate={{
+            paddingRight: collapsed ? 6 : 12,
+            gap: collapsed ? 0 : 6,
+          }}
+          transition={reduce ? { duration: 0 } : railSpring}
           className={cx(
-            "bg-bg-state-soft hover:bg-bg-state-soft-hover focus-visible:shadow-misc-focus flex items-center justify-center overflow-hidden rounded-full outline-none",
+            "bg-bg-state-soft hover:bg-bg-state-soft-hover focus-visible:shadow-misc-focus flex items-center justify-center overflow-hidden rounded-full py-6 pl-6 outline-none",
             accountOpen && "bg-bg-state-soft-press",
-            collapsed ? "p-6" : "gap-6 py-6 pr-12 pl-6",
           )}
         >
           <Avatar src={user.avatarSrc} name="" />
-          {collapsed ? null : (
-            <>
-              <span className="text-heading-subsection text-text-default px-2 whitespace-nowrap">
-                {user.name}
-              </span>
-              <Icon
-                icon={CaretDown}
-                size={20}
-                className={cx("transition-transform", accountOpen && "rotate-180")}
-              />
-            </>
-          )}
-        </button>
+          <RailCopy
+            visible={!collapsed}
+            delay={railItemDelay(ACCOUNT_INDEX, collapsed)}
+            className="flex items-center"
+          >
+            <span className="text-heading-subsection text-text-default px-2 whitespace-nowrap">
+              {user.name}
+            </span>
+            <Icon
+              icon={CaretDown}
+              size={20}
+              className={cx("transition-transform", accountOpen && "rotate-180")}
+            />
+          </RailCopy>
+        </motion.button>
         <DropdownMenu
           open={accountOpen}
           onClose={() => setAccountOpen(false)}
@@ -241,6 +307,6 @@ export function Sidebar({
           </DropdownMenuItem>
         </DropdownMenu>
       </div>
-    </nav>
+    </motion.nav>
   )
 }

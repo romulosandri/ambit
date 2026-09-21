@@ -45,7 +45,7 @@ const sourceOptions: FilterOption[] = subscribedSources.map((source) =>
 )
 
 export function useFeedFilter() {
-  const { navigate } = useAppNav()
+  const { openSubscription } = useAppNav()
   const [value, setValue] = useState<FilterValue>(emptyFilterValue)
 
   const control = (
@@ -55,12 +55,8 @@ export function useFeedFilter() {
       topics={topicOptions}
       sources={sourceOptions}
       channels={channelOptions}
-      onCreateTopic={() =>
-        navigate({ name: "subscriptions", modal: "topic" })
-      }
-      onCreateSource={() =>
-        navigate({ name: "subscriptions", modal: "source" })
-      }
+      onCreateTopic={() => openSubscription("topic")}
+      onCreateSource={() => openSubscription("source")}
     />
   )
 

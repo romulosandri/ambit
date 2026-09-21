@@ -5,7 +5,6 @@ import { CardLink, cardLinkControlClassName, cardLinkRootClassName } from "./Car
 import { Cover } from "./Cover"
 import { SaveControl } from "./SaveButton"
 import { cx } from "./cx"
-import { PressableArticle } from "@/motion"
 
 export type FeaturedArticleCardProps = {
   title: string
@@ -41,7 +40,7 @@ export function FeaturedArticleCard({
   className,
 }: FeaturedArticleCardProps) {
   return (
-    <PressableArticle
+    <article
       className={cx(
         "group bg-bg-state-ghost hover:bg-bg-state-ghost-hover flex h-260 w-full items-center gap-16 rounded-md p-8 max-md:h-auto max-md:flex-col max-md:items-stretch",
         (href || onSave) && cardLinkRootClassName,
@@ -80,6 +79,6 @@ export function FeaturedArticleCard({
         size="2xl"
         className="max-md:h-180 max-md:min-w-0 max-md:w-full"
       />
-    </PressableArticle>
+    </article>
   )
 }

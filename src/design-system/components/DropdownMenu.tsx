@@ -147,6 +147,7 @@ export type DropdownMenuItemProps = {
   variant?: DropdownMenuItemVariant
   leading?: ReactNode
   checked?: boolean
+  indeterminate?: boolean
   selected?: boolean
   onChange?: (checked: boolean) => void
   icon?: PhosphorIcon
@@ -161,6 +162,7 @@ export function DropdownMenuItem({
   variant = "action",
   leading,
   checked = false,
+  indeterminate = false,
   selected = false,
   onChange,
   icon,
@@ -182,6 +184,7 @@ export function DropdownMenuItem({
           <span className="bg-bg-state-ghost hover:bg-bg-state-ghost-hover flex min-w-0 flex-1 items-center gap-4 rounded-xs p-6">
             <Checkbox
               checked={checked}
+              indeterminate={indeterminate}
               onChange={onChange}
               disabled={disabled}
             />

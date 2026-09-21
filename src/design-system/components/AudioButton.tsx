@@ -98,10 +98,7 @@ export function AudioButton({
         onPointerDown={stopCardNavigation}
       />
       <span className="flex items-center gap-4">
-        <AudioWave
-          playing={playing && !disabled}
-          progress={disabled ? 0 : progress}
-        />
+        <AudioWave progress={disabled ? 0 : progress} />
         <span
           className={cx(
             "text-heading-subsection px-2 whitespace-nowrap",

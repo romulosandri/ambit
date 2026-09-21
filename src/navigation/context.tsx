@@ -4,11 +4,13 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react"
+import type { SubscriptionStep } from "@ds"
 import { matchChatForPrompt } from "@/data"
-import { parseHash, serializeRoute } from "./routes"
+import { parseHash, serializeRoute, withoutModal } from "./routes"
 import type { AppRoute } from "./types"
 
 type NavigationValue = {
@@ -16,6 +18,8 @@ type NavigationValue = {
   navigate: (route: AppRoute) => void
   goBack: () => void
   openPrompt: (prompt: string) => void
+  openSubscription: (step?: SubscriptionStep) => void
+  closeSubscription: () => void
   savedIds: Set<string>
   toggleSaved: (articleId: string) => void
 }
@@ -46,13 +50,15 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("hashchange", sync)
   }, [])
 
+  const routeRef = useRef(route)
+  routeRef.current = route
+
   const navigate = useCallback((next: AppRoute) => {
     const hash = serializeRoute(next)
-    if (window.location.hash === hash) {
-      setRoute(next)
-      return
+    setRoute(next)
+    if (window.location.hash !== hash) {
+      window.location.hash = hash
     }
-    window.location.hash = hash
   }, [])
 
   const goBack = useCallback(() => {
@@ -80,9 +86,38 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
     })
   }, [])
 
+  const openSubscription = useCallback(
+    (step: SubscriptionStep = "choose") => {
+      navigate({ ...routeRef.current, modal: step })
+    },
+    [navigate],
+  )
+
+  const closeSubscription = useCallback(() => {
+    navigate(withoutModal(routeRef.current))
+  }, [navigate])
+
   const value = useMemo(
-    () => ({ route, navigate, goBack, openPrompt, savedIds, toggleSaved }),
-    [route, navigate, goBack, openPrompt, savedIds, toggleSaved],
+    () => ({
+      route,
+      navigate,
+      goBack,
+      openPrompt,
+      openSubscription,
+      closeSubscription,
+      savedIds,
+      toggleSaved,
+    }),
+    [
+      route,
+      navigate,
+      goBack,
+      openPrompt,
+      openSubscription,
+      closeSubscription,
+      savedIds,
+      toggleSaved,
+    ],
   )
 
   return (

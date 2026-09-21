@@ -70,6 +70,25 @@ function toggleChannel(
     : [...list, name]
 }
 
+function mergeSelected<T>(current: readonly T[], visible: readonly T[]): T[] {
+  const next = new Set(current)
+  for (const item of visible) next.add(item)
+  return [...next]
+}
+
+function omitSelected<T>(current: readonly T[], visible: readonly T[]): T[] {
+  const drop = new Set(visible)
+  return current.filter((item) => !drop.has(item))
+}
+
+function selectedCount<T>(current: readonly T[], visible: readonly T[]): number {
+  const selected = new Set(current)
+  return visible.reduce(
+    (count, item) => count + (selected.has(item) ? 1 : 0),
+    0,
+  )
+}
+
 function matchesQuery(label: string, query: string): boolean {
   if (!query) return true
   return label.toLowerCase().includes(query.toLowerCase())
@@ -127,6 +146,71 @@ export function Filter({
         return
       default:
         return
+    }
+  }
+
+  const selection = (() => {
+    switch (tab) {
+      case "topics": {
+        const ids = visibleTopics.map((topic) => topic.id)
+        const count = selectedCount(value.topicIds, ids)
+        return { count, total: ids.length }
+      }
+      case "sources": {
+        const ids = visibleSources.map((source) => source.id)
+        const count = selectedCount(value.sourceIds, ids)
+        return { count, total: ids.length }
+      }
+      case "channels": {
+        const ids = visibleChannels.map((channel) => channel.name)
+        const count = selectedCount(value.channels, ids)
+        return { count, total: ids.length }
+      }
+      default: {
+        const exhaustive: never = tab
+        return exhaustive
+      }
+    }
+  })()
+  const allSelected = selection.total > 0 && selection.count === selection.total
+  const someSelected = selection.count > 0 && !allSelected
+
+  function handleSelectAll() {
+    switch (tab) {
+      case "topics": {
+        const ids = visibleTopics.map((topic) => topic.id)
+        onChange({
+          ...value,
+          topicIds: allSelected
+            ? omitSelected(value.topicIds, ids)
+            : mergeSelected(value.topicIds, ids),
+        })
+        return
+      }
+      case "sources": {
+        const ids = visibleSources.map((source) => source.id)
+        onChange({
+          ...value,
+          sourceIds: allSelected
+            ? omitSelected(value.sourceIds, ids)
+            : mergeSelected(value.sourceIds, ids),
+        })
+        return
+      }
+      case "channels": {
+        const ids = visibleChannels.map((channel) => channel.name)
+        onChange({
+          ...value,
+          channels: allSelected
+            ? omitSelected(value.channels, ids)
+            : mergeSelected(value.channels, ids),
+        })
+        return
+      }
+      default: {
+        const exhaustive: never = tab
+        return exhaustive
+      }
     }
   }
 
@@ -266,6 +350,15 @@ export function Filter({
               transition={presenceTransition}
               className="flex flex-col"
             >
+              <DropdownMenuItem
+                variant="checkbox"
+                checked={allSelected}
+                indeterminate={someSelected}
+                onChange={handleSelectAll}
+                className="bg-bg-default sticky top-0 z-1"
+              >
+                Select all
+              </DropdownMenuItem>
               {list}
             </motion.div>
           )}
@@ -428,7 +521,26 @@ export function FilterMenu({
               }
               transition={presenceTransition}
             >
-              <Filter {...filterProps} id={dialogId} />
+              <Filter
+                {...filterProps}
+                id={dialogId}
+                onCreateTopic={
+                  filterProps.onCreateTopic
+                    ? () => {
+                        setOpen(false)
+                        filterProps.onCreateTopic?.()
+                      }
+                    : undefined
+                }
+                onCreateSource={
+                  filterProps.onCreateSource
+                    ? () => {
+                        setOpen(false)
+                        filterProps.onCreateSource?.()
+                      }
+                    : undefined
+                }
+              />
             </motion.div>
           ) : null}
         </AnimatePresence>,

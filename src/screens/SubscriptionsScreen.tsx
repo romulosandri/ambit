@@ -11,7 +11,7 @@ import { subscribedSources, homeTopics } from "@/data"
 import { useAppNav } from "@/navigation"
 
 export function SubscriptionsScreen() {
-  const { route, navigate } = useAppNav()
+  const { route, navigate, openSubscription } = useAppNav()
   const tab =
     route.name === "subscriptions" && route.tab === "sources"
       ? "sources"
@@ -19,7 +19,7 @@ export function SubscriptionsScreen() {
 
   function setStep(next: SubscriptionStep | null) {
     if (next) {
-      navigate({ name: "subscriptions", tab, modal: next })
+      openSubscription(next)
       return
     }
     navigate({ name: "subscriptions", tab })

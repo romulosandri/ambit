@@ -6,6 +6,7 @@ import {
   microTransition,
   presenceOffset,
   presenceTransition,
+  railCopyTransition,
 } from "./config"
 
 export function PresenceList({
@@ -73,6 +74,36 @@ export function Crossfade({
         {children}
       </motion.div>
     </AnimatePresence>
+  )
+}
+
+/** Label/logo/meta that rides along with the nav rail collapse. */
+export function RailCopy({
+  visible,
+  delay = 0,
+  className,
+  as = "span",
+  children,
+}: {
+  visible: boolean
+  delay?: number
+  className?: string
+  as?: "span" | "div"
+  children: ReactNode
+}) {
+  const reduce = useReducedMotion()
+  const MotionTag = as === "div" ? motion.div : motion.span
+
+  return (
+    <MotionTag
+      initial={false}
+      animate={visible ? { opacity: 1, x: 0 } : { opacity: 0, x: -microOffset }}
+      transition={reduce ? { duration: 0 } : railCopyTransition(visible, delay)}
+      className={className}
+      aria-hidden={!visible || undefined}
+    >
+      {children}
+    </MotionTag>
   )
 }
 

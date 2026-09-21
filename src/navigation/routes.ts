@@ -1,5 +1,6 @@
+import type { SubscriptionStep } from "@ds"
 import type { DiscoveryCategory } from "@/data"
-import type { AppRoute, PreviewTab } from "./types"
+import type { AppRoute, AppScreen, PreviewTab } from "./types"
 
 const discoveryCategories: DiscoveryCategory[] = [
   "for-you",
@@ -20,7 +21,11 @@ function isDiscoveryCategory(value: string): value is DiscoveryCategory {
   return discoveryCategories.includes(value as DiscoveryCategory)
 }
 
-export function serializeRoute(route: AppRoute): string {
+function isSubscriptionStep(value: string | null): value is SubscriptionStep {
+  return value === "choose" || value === "topic" || value === "source"
+}
+
+function serializePath(route: AppRoute): string {
   switch (route.name) {
     case "auth":
       return "#/auth"
@@ -38,13 +43,10 @@ export function serializeRoute(route: AppRoute): string {
       return "#/chats"
     case "chat":
       return `#/chat/${route.id}`
-    case "subscriptions": {
-      if (route.modal === "topic") return "#/subscriptions/new/topic"
-      if (route.modal === "source") return "#/subscriptions/new/source"
-      if (route.modal === "choose") return "#/subscriptions/new"
-      if (route.tab === "sources") return "#/subscriptions/sources"
-      return "#/subscriptions"
-    }
+    case "subscriptions":
+      return route.tab === "sources"
+        ? "#/subscriptions/sources"
+        : "#/subscriptions"
     case "saved":
       return "#/saved"
     case "topic":
@@ -60,10 +62,38 @@ export function serializeRoute(route: AppRoute): string {
   }
 }
 
-export function parseHash(hash = window.location.hash): AppRoute {
-  const path = hash.replace(/^#\/?/, "").replace(/\/+$/, "")
-  const parts = path.split("/").filter(Boolean)
+export function serializeRoute(route: AppRoute): string {
+  const path = serializePath(route)
+  switch (route.modal) {
+    case "topic":
+      return `${path}?new=topic`
+    case "source":
+      return `${path}?new=source`
+    case "choose":
+      return `${path}?new=choose`
+    case undefined:
+      return path
+    default: {
+      const exhaustive: never = route.modal
+      return exhaustive
+    }
+  }
+}
 
+export function withoutModal(route: AppRoute): AppRoute {
+  if (!route.modal) return route
+  const { modal: _modal, ...screen } = route
+  return screen
+}
+
+function parseLegacyModal(parts: string[]): SubscriptionStep | undefined {
+  if (parts[0] !== "subscriptions" || parts[1] !== "new") return undefined
+  if (parts[2] === "topic") return "topic"
+  if (parts[2] === "source") return "source"
+  return "choose"
+}
+
+function parseScreen(parts: string[]): AppScreen {
   if (parts.length === 0 || parts[0] === "auth") {
     return { name: "auth" }
   }
@@ -88,14 +118,8 @@ export function parseHash(hash = window.location.hash): AppRoute {
     case "chat":
       return parts[1] ? { name: "chat", id: parts[1] } : { name: "chats" }
     case "subscriptions":
-      if (parts[1] === "new" && parts[2] === "topic") {
-        return { name: "subscriptions", modal: "topic" }
-      }
-      if (parts[1] === "new" && parts[2] === "source") {
-        return { name: "subscriptions", modal: "source" }
-      }
       if (parts[1] === "new") {
-        return { name: "subscriptions", modal: "choose" }
+        return { name: "subscriptions" }
       }
       return {
         name: "subscriptions",
@@ -114,7 +138,37 @@ export function parseHash(hash = window.location.hash): AppRoute {
   }
 }
 
+export function parseHash(hash = window.location.hash): AppRoute {
+  const raw = hash.replace(/^#\/?/, "")
+  const queryIndex = raw.indexOf("?")
+  const pathRaw = queryIndex === -1 ? raw : raw.slice(0, queryIndex)
+  const queryRaw = queryIndex === -1 ? "" : raw.slice(queryIndex + 1)
+  const path = pathRaw.replace(/\/+$/, "")
+  const parts = path.split("/").filter(Boolean)
+  const queryModal = new URLSearchParams(queryRaw).get("new")
+  const modal = isSubscriptionStep(queryModal)
+    ? queryModal
+    : parseLegacyModal(parts)
+  const screen = parseScreen(parts)
+  return modal ? { ...screen, modal } : screen
+}
+
 export function previewTabFor(route: AppRoute): PreviewTab {
+  switch (route.modal) {
+    case "topic":
+      return "newTopic"
+    case "source":
+      return "newSource"
+    case "choose":
+      return "newSubscription"
+    case undefined:
+      break
+    default: {
+      const exhaustive: never = route.modal
+      return exhaustive
+    }
+  }
+
   switch (route.name) {
     case "auth":
       return "auth"
@@ -131,9 +185,6 @@ export function previewTabFor(route: AppRoute): PreviewTab {
     case "chat":
       return "chatDetails"
     case "subscriptions":
-      if (route.modal === "topic") return "newTopic"
-      if (route.modal === "source") return "newSource"
-      if (route.modal === "choose") return "newSubscription"
       return "subscriptions"
     case "saved":
       return "saved"

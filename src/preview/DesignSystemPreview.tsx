@@ -284,6 +284,7 @@ export function DesignSystemPreview() {
           <Row label="Checkbox">
             <Checkbox defaultChecked />
             <Checkbox />
+            <Checkbox checked={false} indeterminate />
             <Checkbox disabled />
             <CheckboxWithText
               title="Remember me"

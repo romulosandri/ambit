@@ -1,11 +1,12 @@
 import { Plus } from "@phosphor-icons/react"
 import { useRef, useState } from "react"
 import {
-  Avatar,
   Button,
+  Cover,
   DailyBriefHorizontalCard,
   Divider,
   DropdownButton,
+  homeFlower,
   PlaylistCard,
   SourceCard,
   Tabs,
@@ -53,7 +54,7 @@ function sourceCardProps(source: (typeof subscribedSources)[number]) {
 }
 
 export function HomeScreen() {
-  const { route, navigate, savedIds, toggleSaved } = useAppNav()
+  const { route, navigate, openSubscription, savedIds, toggleSaved } = useAppNav()
   const filter = useFeedFilter()
   const [topicRange, setTopicRange] = useState("Last 7 Days")
   const tab = route.name === "home" && route.tab === "sources" ? "sources" : "topics"
@@ -100,7 +101,9 @@ export function HomeScreen() {
       <div data-home-stage="header">
         <PageHeader
           title={`${user.firstName}, here is what you missed...`}
-          lead={<Avatar name={user.name} src={user.avatarSrc} />}
+          lead={
+            <Cover src={homeFlower} alt="" size="sm" radius="full" kenBurns />
+          }
           toolbar={
             <ToolBar
               actions={
@@ -112,9 +115,7 @@ export function HomeScreen() {
                     style="ghost"
                     leadIcon={Plus}
                     aria-label="Add topic"
-                    onClick={() =>
-                      navigate({ name: "subscriptions", modal: "topic" })
-                    }
+                    onClick={() => openSubscription("topic")}
                   />
                 </>
               }
